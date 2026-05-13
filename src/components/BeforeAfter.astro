@@ -1,0 +1,99 @@
+---
+import { Image } from "astro:assets";
+import type { BeforeAfterItem } from "~/data/beforeAfter.ts";
+
+export interface Props {
+  item: BeforeAfterItem;
+}
+
+const { item } = Astro.props;
+---
+
+<!--
+  Drag-divider before/after. JS is tiny and progressive — without it, both
+  images stack vertically with clear "Before" / "After" labels.
+-->
+<figure class="ba w-full select-none">
+  <div
+    class="ba-frame relative w-full overflow-hidden rounded-2xl bg-[var(--color-ink-elev)] aspect-[16/10]"
+    role="region"
+    aria-label={`Before and after: ${item.vehicle}`}
+  >
+    <!-- After (base layer) -->
+    <Image
+      src={item.after}
+      alt={`${item.vehicle} after repair`}
+      class="ba-after absolute inset-0 w-full h-full object-cover"
+      widths={[640, 960, 1280, 1600]}
+      sizes="(min-width: 1024px) 50vw, 100vw"
+      loading="lazy"
+    />
+    <!-- Before (clipped layer) -->
+    <div class="ba-clip absolute inset-0 overflow-hidden" style="width: 50%;">
+      <Image
+        src={item.before}
+        alt={`${item.vehicle} before repair`}
+        class="ba-before absolute inset-0 h-full w-screen max-w-none object-cover"
+        widths={[640, 960, 1280, 1600]}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        loading="lazy"
+      />
+    </div>
+
+    <!-- Labels -->
+    <span class="absolute top-3 left-3 bg-[var(--color-ink)]/80 backdrop-blur px-2.5 py-1 text-[10px] uppercase tracking-widest rounded">
+      Before
+    </span>
+    <span class="absolute top-3 right-3 bg-[var(--color-ink)]/80 backdrop-blur px-2.5 py-1 text-[10px] uppercase tracking-widest rounded">
+      After
+    </span>
+
+    <!-- Divider + handle -->
+    <div
+      class="ba-divider absolute top-0 bottom-0 w-px bg-[var(--color-bone)] pointer-events-none"
+      style="left: 50%; transform: translateX(-0.5px);"
+    >
+      <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[var(--color-bone)] text-[var(--color-ink)] flex items-center justify-center shadow-xl">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <polyline points="15 6 9 12 15 18"/>
+          <polyline points="9 6 15 12 9 18"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- Accessible slider — keyboard-controllable, also receives pointer events -->
+    <input
+      type="range"
+      class="ba-range absolute inset-0 w-full h-full opacity-0 cursor-ew-resize"
+      min="0"
+      max="100"
+      value="50"
+      step="0.1"
+      aria-label={`Before-and-after slider for ${item.vehicle}`}
+    />
+  </div>
+
+  <figcaption class="flex items-baseline justify-between mt-3 gap-3">
+    <p class="font-display text-xl md:text-2xl text-[var(--color-bone)]">{item.vehicle}</p>
+    <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">{item.damage}</p>
+  </figcaption>
+</figure>
+
+<script>
+  // Hook up every slider on the page. Updates the clip width + divider position.
+  const figures = document.querySelectorAll<HTMLElement>(".ba");
+  figures.forEach((fig) => {
+    const range = fig.querySelector<HTMLInputElement>(".ba-range");
+    const clip = fig.querySelector<HTMLElement>(".ba-clip");
+    const divider = fig.querySelector<HTMLElement>(".ba-divider");
+    if (!range || !clip || !divider) return;
+
+    const apply = (value: number) => {
+      clip.style.width = `${value}%`;
+      divider.style.left = `${value}%`;
+    };
+    range.addEventListener("input", () => apply(Number(range.value)));
+    // Initial sync in case browser remembered a different value
+    apply(Number(range.value));
+  });
+</script>

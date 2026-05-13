@@ -1,0 +1,48 @@
+---
+import Base from "~/layouts/Base.astro";
+import SectionHeader from "~/components/SectionHeader.astro";
+import BeforeAfter from "~/components/BeforeAfter.astro";
+import { beforeAfter } from "~/data/beforeAfter.ts";
+import { site } from "~/data/site.ts";
+---
+
+<Base
+  title="Before & After"
+  path="/before-after/"
+  description="Side-by-side collision repairs from Phil's Collision Center — drag the divider to see the transformation."
+>
+  <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
+    <SectionHeader
+      eyebrow="Before / After"
+      title="The before nobody wants. The after nobody questions."
+      deck="Drag the divider on any image. Every car drove in on the left and drove out on the right."
+    />
+  </section>
+
+  <section class="container-page pb-24 md:pb-32">
+    <div class="grid lg:grid-cols-2 gap-10 md:gap-14">
+      {beforeAfter.map((item) => (
+        <BeforeAfter item={item} />
+      ))}
+    </div>
+  </section>
+
+  <section class="container-page pb-20 md:pb-32">
+    <div class="text-center max-w-2xl mx-auto flex flex-col gap-5">
+      <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
+        Your car. Next.
+      </h2>
+      <p class="font-editorial text-2xl text-[var(--color-bone-muted)] leading-snug">
+        Bring it in for a free estimate. We'll show you exactly what we'd do — and what it should cost.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mt-2">
+        <a href="/contact/" class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          Schedule estimate
+        </a>
+        <a href={`tel:${site.phone.tel}`} class="inline-flex items-center justify-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          {site.phone.display}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

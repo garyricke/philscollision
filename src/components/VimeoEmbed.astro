@@ -1,0 +1,97 @@
+---
+import { vimeoEmbedUrl, vimeoThumbnailUrl } from "~/data/videos.ts";
+
+export interface Props {
+  vimeoId: string;
+  /** Title of the video — required for the iframe accessible name. */
+  title: string;
+  /** Locked aspect for vertical phone-shot videos. Override only if needed. */
+  aspect?: "9/16" | "16/9" | "1/1";
+  /** Path to a VTT caption file in /public/captions/, optional. */
+  captions?: string;
+  /** When true, the poster gradient is muted so the title reads cleanly. */
+  showOverlay?: boolean;
+}
+
+const {
+  vimeoId,
+  title,
+  aspect = "9/16",
+  captions,
+  showOverlay = true,
+} = Astro.props;
+
+const id = `vimeo-${vimeoId}`;
+const thumb = vimeoThumbnailUrl(vimeoId);
+// `?texttrack=en` makes Vimeo show our captions by default when the iframe loads
+const embedSrc =
+  vimeoEmbedUrl(vimeoId) +
+  (captions ? "&texttrack=en&autoplay=1" : "&autoplay=1");
+---
+
+<!--
+  Lazy-loading Vimeo facade. Renders only the poster image until clicked, then
+  swaps in the iframe and autoplays. No JS framework involved.
+-->
+<div
+  class="vimeo-facade group relative w-full overflow-hidden rounded-2xl bg-[var(--color-ink-elev)]"
+  style={`aspect-ratio: ${aspect};`}
+  data-vimeo-id={vimeoId}
+  data-embed-src={embedSrc}
+  data-captions={captions ?? ""}
+>
+  <button
+    type="button"
+    id={`${id}-play`}
+    class="absolute inset-0 w-full h-full cursor-pointer"
+    aria-label={`Play video: ${title}`}
+  >
+    <img
+      src={thumb}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+    />
+    {showOverlay && (
+      <span
+        class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-black/15"
+        aria-hidden="true"
+      />
+    )}
+    <span
+      class="absolute inset-0 flex items-center justify-center"
+      aria-hidden="true"
+    >
+      <span class="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-[var(--color-bone)]/95 text-[var(--color-ink)] shadow-2xl transition-transform duration-300 group-hover:scale-110">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </span>
+    </span>
+  </button>
+</div>
+
+<script>
+  // One delegated listener for every video on the page.
+  document.addEventListener("click", (e) => {
+    const target = e.target as Element | null;
+    const facade = target?.closest(".vimeo-facade") as HTMLElement | null;
+    if (!facade || facade.querySelector("iframe")) return;
+
+    const embedSrc = facade.dataset.embedSrc;
+    if (!embedSrc) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.src = embedSrc;
+    iframe.title = facade.querySelector("button")?.getAttribute("aria-label") ?? "Video";
+    iframe.setAttribute("frameborder", "0");
+    iframe.setAttribute(
+      "allow",
+      "autoplay; fullscreen; picture-in-picture; encrypted-media",
+    );
+    iframe.setAttribute("allowfullscreen", "");
+    iframe.className = "absolute inset-0 w-full h-full";
+    facade.replaceChildren(iframe);
+  });
+</script>

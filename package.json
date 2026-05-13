@@ -1,0 +1,22 @@
+{
+  "name": "phils-collision",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Phil's Collision Center — Astro rebuild",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "captions": "node scripts/generate-vtt.mjs",
+    "build": "npm run captions && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.1.0",
+    "@astrojs/sitemap": "^3.2.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "sharp": "^0.33.5"
+  }
+}

@@ -1,0 +1,71 @@
+---
+import Base from "~/layouts/Base.astro";
+import SectionHeader from "~/components/SectionHeader.astro";
+import VideoCard from "~/components/VideoCard.astro";
+import { videos } from "~/data/videos.ts";
+import { site } from "~/data/site.ts";
+
+// Group by role for editorial structure: owner & staff first, then customers,
+// then community / neighbors.
+const groups = [
+  {
+    title: "From the shop",
+    deck: "Ed and his team, on the craft.",
+    list: videos.filter((v) => v.role === "owner" || v.role === "staff"),
+  },
+  {
+    title: "From customers",
+    deck: "Real people who came in after a bad day — and kept coming back.",
+    list: videos.filter((v) => v.role === "customer"),
+  },
+  {
+    title: "From the neighborhood",
+    deck: "Forty years of business neighbors on Lincoln Highway.",
+    list: videos.filter((v) => v.role === "neighbor"),
+  },
+];
+---
+
+<Base
+  title="Stories"
+  path="/stories/"
+  description={`${videos.length} short videos from customers, staff, and neighbors of Phil's Collision Center, Schererville, IN. Captioned and transcribed.`}
+>
+  <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
+    <SectionHeader
+      eyebrow={`${videos.length} stories`}
+      title="In their own words."
+      deck="Customers, staff, and neighbors — filmed in the lobby, captioned for accessibility, transcripts under every clip."
+    />
+  </section>
+
+  {groups.map((g) => g.list.length > 0 && (
+    <section class="container-page pb-20 md:pb-28">
+      <header class="mb-10 flex flex-col gap-2 border-t border-[var(--color-ink-edge)] pt-10">
+        <h2 class="font-display text-4xl md:text-5xl text-[var(--color-bone)]">{g.title}</h2>
+        <p class="font-editorial text-xl text-[var(--color-bone-muted)] max-w-xl leading-snug">{g.deck}</p>
+      </header>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        {g.list.map((v) => (
+          <VideoCard video={v} />
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="container-page py-20 md:py-32">
+    <div class="rounded-2xl border border-[var(--color-spark-500)]/30 bg-[var(--color-ink-elev)] p-10 md:p-14 text-center">
+      <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95] max-w-3xl mx-auto">
+        Become the next story.
+      </h2>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+        <a href="/contact/" class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          Schedule estimate
+        </a>
+        <a href={`tel:${site.phone.tel}`} class="inline-flex items-center justify-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          {site.phone.display}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

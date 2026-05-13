@@ -1,0 +1,191 @@
+---
+import Base from "~/layouts/Base.astro";
+import SectionHeader from "~/components/SectionHeader.astro";
+import VideoCard from "~/components/VideoCard.astro";
+import { videos } from "~/data/videos.ts";
+import { site } from "~/data/site.ts";
+
+const ivan = videos.find((v) => v.slug === "ivan-master-painter")!;
+const ward = videos.find((v) => v.slug === "ward")!;
+
+const primary = [
+  {
+    n: "01",
+    title: "Collision Repair",
+    summary: "Major and minor — single panels through full structural work.",
+    detail: [
+      "Frame & unibody straightening on a Chief Meridian measuring system",
+      "Pro Spot welders, factory-procedure repairs",
+      "OEM and OE-equivalent parts; verified pre/post scans",
+      "Lifetime workmanship warranty, nationwide",
+    ],
+  },
+  {
+    n: "02",
+    title: "Paint & Refinish",
+    summary: "Waterborne paint, custom and metallic color matching, paintless dent repair.",
+    detail: [
+      "Waterborne basecoat (cleaner, better color accuracy than legacy lacquers)",
+      "Custom and rare color matching — including metallic flakes and pearls",
+      "Blended panels you can't tell were touched",
+      "Paintless dent repair for door dings and hail",
+    ],
+  },
+  {
+    n: "03",
+    title: "Mechanical Repair",
+    summary: "The mechanical work that completes a collision job — and the everyday work that doesn't need to be a collision.",
+    detail: [
+      "Door latches, handles, window regulators",
+      "Brakes, oil changes, suspension",
+      "Pre- and post-repair scans, calibrations on ADAS-equipped vehicles",
+      "Diagnostics from the same team that handles the body work",
+    ],
+  },
+  {
+    n: "04",
+    title: "Auto Glass",
+    summary: "Replacement and recalibration on modern windshields.",
+    detail: [
+      "Windshield, side, and rear glass replacement",
+      "ADAS camera recalibration when required",
+      "OEM glass available on request",
+    ],
+  },
+];
+
+const adjacent = [
+  {
+    title: "Insurance liaison",
+    body: "State Farm Direct Repair Program partner. We talk to your insurer directly — no runaround, no surprises.",
+  },
+  {
+    title: "Detailing & buffing",
+    body: "Standalone detailing for cars that don't need bodywork. Show-car finishes for cars that do.",
+  },
+  {
+    title: "Towing",
+    body: "Partnered with Stan's Towing — one call brings the car straight to us.",
+  },
+  {
+    title: "Custom restoration",
+    body: "Frame-off restorations for classics. Ask about the '65 Chevelle we just finished.",
+  },
+];
+---
+
+<Base
+  title="Services"
+  path="/services/"
+  description="Collision repair, paint, mechanical, glass, detailing, towing, custom restoration. I-CAR certified, State Farm DRP partner."
+>
+  <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
+    <SectionHeader
+      eyebrow="Services"
+      title="What we do, and the way we do it."
+      deck="Every job, from a door ding to a frame-off restoration, follows manufacturer procedure and ends with a lifetime workmanship warranty."
+    />
+  </section>
+
+  <!-- Primary services -->
+  <section class="container-page pb-20 md:pb-28">
+    <ol class="flex flex-col">
+      {primary.map((s, i) => (
+        <li class="grid md:grid-cols-12 gap-6 md:gap-10 py-10 md:py-14 border-t border-[var(--color-ink-edge)] last:border-b">
+          <div class="md:col-span-2">
+            <span class="numeral text-3xl md:text-4xl">{s.n}</span>
+          </div>
+          <div class="md:col-span-4">
+            <h3 class="font-display text-3xl md:text-4xl text-[var(--color-bone)]">{s.title}</h3>
+            <p class="font-editorial text-xl text-[var(--color-bone-muted)] mt-3 leading-snug">{s.summary}</p>
+          </div>
+          <div class="md:col-span-6">
+            <ul class="flex flex-col gap-2 text-[var(--color-bone-muted)]">
+              {s.detail.map((d) => (
+                <li class="flex gap-3">
+                  <span class="text-[var(--color-spark-500)] shrink-0">—</span>
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- Adjacent services -->
+  <section class="bg-[var(--color-ink-elev)] border-y border-[var(--color-ink-edge)] py-20 md:py-28">
+    <div class="container-page">
+      <SectionHeader
+        eyebrow="Also"
+        title="The things you'd hope a collision shop also does."
+      />
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {adjacent.map((a) => (
+          <article class="p-6 rounded-2xl border border-[var(--color-ink-edge)] hover:border-[var(--color-spark-500)]/40 transition-colors">
+            <h3 class="font-display text-2xl text-[var(--color-bone)] mb-3">{a.title}</h3>
+            <p class="text-[var(--color-bone-muted)] leading-relaxed">{a.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Inline staff videos -->
+  <section class="container-page py-20 md:py-28">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-16">
+      <div class="md:col-span-7 flex flex-col gap-5">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">From the team</p>
+        <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
+          Twenty years on the spray gun.
+        </h2>
+        <p class="font-editorial text-2xl text-[var(--color-bone-muted)] leading-snug max-w-lg">
+          Ivan paints every vehicle that comes through the door — and he's been doing it since right out of high school.
+        </p>
+      </div>
+      <div class="md:col-span-5">
+        <div class="max-w-xs">
+          <VideoCard video={ivan} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page pb-20 md:pb-28">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-16">
+      <div class="md:col-span-5 order-2 md:order-1">
+        <div class="max-w-xs">
+          <VideoCard video={ward} />
+        </div>
+      </div>
+      <div class="md:col-span-7 order-1 md:order-2 flex flex-col gap-5">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Insurance, handled</p>
+        <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
+          State Farm DRP partner.
+        </h2>
+        <p class="font-editorial text-2xl text-[var(--color-bone-muted)] leading-snug max-w-lg">
+          We talk to your agent and your adjuster directly. You get one phone call: ours.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page pb-20 md:pb-32">
+    <div class="rounded-2xl border border-[var(--color-spark-500)]/30 bg-[var(--color-ink-elev)] p-10 md:p-14 flex flex-col md:flex-row gap-6 md:items-center justify-between">
+      <div class="max-w-2xl">
+        <h2 class="font-display text-3xl md:text-5xl text-[var(--color-bone)] leading-tight">
+          Free estimate. No appointment needed.
+        </h2>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/contact/" class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          Schedule
+        </a>
+        <a href={`tel:${site.phone.tel}`} class="inline-flex items-center justify-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          {site.phone.display}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,68 @@
+---
+import Base from "~/layouts/Base.astro";
+import SectionHeader from "~/components/SectionHeader.astro";
+import { faqs } from "~/data/faqs.ts";
+import { site } from "~/data/site.ts";
+
+// FAQPage schema for rich results in Google
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<Base
+  title="FAQs"
+  path="/faqs/"
+  description="Common questions about collision repair, insurance, warranties, and what to expect at Phil's Collision Center."
+  extraJsonLd={faqJsonLd}
+>
+  <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
+    <SectionHeader
+      eyebrow="FAQs"
+      title="The questions we get, answered."
+      deck="If yours isn't here, call us — we'd rather answer it over the phone."
+    />
+  </section>
+
+  <section class="container-page pb-24 md:pb-32 max-w-3xl">
+    <ul class="flex flex-col">
+      {faqs.map((f, i) => (
+        <li class="border-t border-[var(--color-ink-edge)] last:border-b">
+          <details class="group">
+            <summary class="cursor-pointer list-none py-6 flex items-start gap-5">
+              <span class="numeral text-lg shrink-0 mt-1">{String(i + 1).padStart(2, "0")}</span>
+              <span class="flex-1 font-display text-2xl md:text-3xl text-[var(--color-bone)] leading-tight">
+                {f.q}
+              </span>
+              <span
+                aria-hidden="true"
+                class="shrink-0 mt-2 text-[var(--color-bone-muted)] transition-transform duration-300 group-open:rotate-45 text-2xl leading-none"
+              >+</span>
+            </summary>
+            <div class="pb-7 pl-12 pr-8 text-[var(--color-bone-muted)] leading-relaxed">
+              {f.a}
+            </div>
+          </details>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-16 p-8 rounded-2xl border border-[var(--color-ink-edge)] text-center">
+      <p class="font-editorial text-2xl text-[var(--color-bone)] leading-snug">
+        Got a question we missed?
+      </p>
+      <a
+        href={`tel:${site.phone.tel}`}
+        class="inline-block mt-4 text-[var(--color-spark-400)] hover:text-[var(--color-spark-500)] underline underline-offset-4 decoration-[var(--color-ink-edge)] hover:decoration-[var(--color-spark-500)]"
+      >
+        {site.phone.display}
+      </a>
+    </div>
+  </section>
+</Base>

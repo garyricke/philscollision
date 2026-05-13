@@ -1,0 +1,48 @@
+---
+import { site } from "~/data/site.ts";
+
+const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+  `${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postal}`,
+)}`;
+---
+
+<!--
+  Mobile-only sticky bottom bar.
+  Body has `pb-20 md:pb-0` so content never slides under this on mobile.
+-->
+<div
+  class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-[var(--color-ink)]/95 backdrop-blur-md border-t border-[var(--color-ink-edge)] pb-[env(safe-area-inset-bottom)]"
+>
+  <div class="grid grid-cols-3 text-sm">
+    <a
+      href={`tel:${site.phone.tel}`}
+      class="flex flex-col items-center justify-center gap-1 py-3 text-[var(--color-bone)] hover:bg-[var(--color-ink-elev)] active:bg-[var(--color-ink-elev)]"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.94.36 1.86.7 2.73a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.35-1.35a2 2 0 0 1 2.11-.45c.87.34 1.79.57 2.73.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+      <span class="text-xs font-medium">Call</span>
+    </a>
+    <a
+      href="/contact/"
+      class="flex flex-col items-center justify-center gap-1 py-3 text-[var(--color-bone)] bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)]"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      <span class="text-xs font-medium">Estimate</span>
+    </a>
+    <a
+      href={mapsUrl}
+      target="_blank"
+      rel="noopener"
+      class="flex flex-col items-center justify-center gap-1 py-3 text-[var(--color-bone)] hover:bg-[var(--color-ink-elev)] active:bg-[var(--color-ink-elev)]"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span class="text-xs font-medium">Directions</span>
+    </a>
+  </div>
+</div>

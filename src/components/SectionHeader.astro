@@ -1,0 +1,45 @@
+---
+export interface Props {
+  /** Small uppercase eyebrow (e.g. "01 — Services") */
+  eyebrow?: string;
+  /** Big display headline */
+  title: string;
+  /** Optional editorial italic deck under the title */
+  deck?: string;
+  /** Optional right-aligned link/CTA in the eyebrow row */
+  link?: { label: string; href: string };
+  /** Center the header instead of left-aligning */
+  center?: boolean;
+}
+
+const { eyebrow, title, deck, link, center = false } = Astro.props;
+---
+
+<header class:list={["flex flex-col gap-4 mb-10 md:mb-16", center && "items-center text-center"]}>
+  {(eyebrow || link) && (
+    <div class="flex items-baseline justify-between w-full gap-3">
+      {eyebrow && (
+        <p class="text-xs uppercase tracking-[0.2em] text-[var(--color-spark-500)] font-medium">
+          {eyebrow}
+        </p>
+      )}
+      {link && (
+        <a
+          href={link.href}
+          class="text-sm text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors group"
+        >
+          {link.label}
+          <span class="inline-block transition-transform group-hover:translate-x-1" aria-hidden="true"> →</span>
+        </a>
+      )}
+    </div>
+  )}
+  <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] max-w-4xl">
+    {title}
+  </h2>
+  {deck && (
+    <p class="font-editorial text-2xl md:text-3xl text-[var(--color-bone-muted)] max-w-2xl leading-snug">
+      {deck}
+    </p>
+  )}
+</header>

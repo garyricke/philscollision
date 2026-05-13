@@ -1,0 +1,40 @@
+---
+import VimeoEmbed from "./VimeoEmbed.astro";
+import type { Video } from "~/data/videos.ts";
+
+export interface Props {
+  video: Video;
+  /** Set to false on the home page reel where we hide the speaker line for density. */
+  showMeta?: boolean;
+}
+
+const { video, showMeta = true } = Astro.props;
+const captionPath = `/captions/${video.slug}.vtt`;
+const roleLabel: Record<Video["role"], string> = {
+  owner: "Owner",
+  staff: "Staff",
+  customer: "Customer",
+  neighbor: "Neighbor",
+};
+---
+
+<article class="flex flex-col gap-4">
+  <VimeoEmbed
+    vimeoId={video.vimeoId}
+    title={`${video.speaker} — ${video.title}`}
+    captions={captionPath}
+  />
+  {showMeta && (
+    <div class="flex flex-col gap-2">
+      <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone)] leading-snug">
+        &ldquo;{video.pullQuote}&rdquo;
+      </p>
+      <div class="flex items-baseline justify-between gap-3">
+        <p class="text-sm text-[var(--color-bone)] font-medium">{video.speaker}</p>
+        <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">
+          {roleLabel[video.role]}
+        </p>
+      </div>
+    </div>
+  )}
+</article>

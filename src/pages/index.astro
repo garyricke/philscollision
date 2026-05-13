@@ -1,0 +1,240 @@
+---
+import { Image } from "astro:assets";
+import Base from "~/layouts/Base.astro";
+import SectionHeader from "~/components/SectionHeader.astro";
+import VideoCard from "~/components/VideoCard.astro";
+import VimeoEmbed from "~/components/VimeoEmbed.astro";
+import BeforeAfter from "~/components/BeforeAfter.astro";
+import { site } from "~/data/site.ts";
+import { heroVideos, storyVideos, videos } from "~/data/videos.ts";
+import { beforeAfter } from "~/data/beforeAfter.ts";
+import sprayer from "~/assets/images/sprayer-on-dark.png";
+
+// Home page picks: the owner's story as the hero video, Ivan as the secondary,
+// and a curated 6-video reel for the stories teaser.
+const heroVideo = videos.find((v) => v.slug === "eds-story")!;
+const storiesPreview = [
+  "bobby-rare-lexus",
+  "jim-n",
+  "chef-q",
+  "ivan-master-painter",
+  "rod-t",
+  "scott-allen",
+]
+  .map((slug) => videos.find((v) => v.slug === slug)!)
+  .filter(Boolean);
+
+const services = [
+  {
+    n: "01",
+    title: "Collision Repair",
+    blurb: "Major or minor. Frame, panel, structural — repaired to factory specifications with Chief Meridian measuring and Pro Spot welders.",
+  },
+  {
+    n: "02",
+    title: "Paint & Refinish",
+    blurb: "Waterborne paint, custom color matching, blended panels you can't tell were ever touched. 20 years of Ivan on the spray gun.",
+  },
+  {
+    n: "03",
+    title: "Mechanical",
+    blurb: "Door latches, handles, window regulators, brakes, oil, suspension. The mechanical work that makes a collision repair complete.",
+  },
+  {
+    n: "04",
+    title: "Free Estimates",
+    blurb: "Walk in or call. We work directly with State Farm and most major insurers — no runaround.",
+  },
+];
+---
+
+<Base
+  path="/"
+  description="Phil's Collision Center — family-run auto body shop in Schererville, Indiana. I-CAR certified, State Farm DRP, lifetime warranty. 45 years of craftsmanship."
+>
+  <!-- ============================================================== HERO -->
+  <section class="container-page pt-12 md:pt-20 pb-20 md:pb-32">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+      <div class="lg:col-span-7 flex flex-col gap-7">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium flex items-center gap-3">
+          <span class="inline-block h-px w-8 bg-[var(--color-spark-500)]"></span>
+          Schererville, IN
+          <span class="slash"></span>
+          Since 1981
+        </p>
+        <h1 class="font-display text-[var(--text-display-2xl)] text-[var(--color-bone)] leading-[0.9]">
+          Transforming<br />
+          accidents into<br />
+          <span class="text-[var(--color-spark-500)]">masterpieces.</span>
+        </h1>
+        <p class="font-editorial text-2xl md:text-3xl text-[var(--color-bone-muted)] max-w-xl leading-snug">
+          A 45-year, family-run collision shop where the painter has been on the spray gun for two decades and the owner still talks to every customer.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-2">
+          <a
+            href="/contact/"
+            class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+          >
+            Free estimate
+            <span aria-hidden="true">→</span>
+          </a>
+          <a
+            href={`tel:${site.phone.tel}`}
+            class="inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+          >
+            {site.phone.display}
+          </a>
+        </div>
+
+        <!-- Trust strip -->
+        <dl class="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-[var(--color-ink-edge)]">
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Years</dt>
+            <dd class="font-display text-4xl md:text-5xl text-[var(--color-bone)] mt-1">45+</dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Google reviews</dt>
+            <dd class="font-display text-4xl md:text-5xl text-[var(--color-bone)] mt-1">253</dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Vehicles past us / day</dt>
+            <dd class="font-display text-4xl md:text-5xl text-[var(--color-bone)] mt-1">80k</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="lg:col-span-5 lg:pl-8">
+        <div class="max-w-sm mx-auto lg:ml-auto lg:mr-0">
+          <VimeoEmbed
+            vimeoId={heroVideo.vimeoId}
+            title={`${heroVideo.speaker} — ${heroVideo.title}`}
+            captions={`/captions/${heroVideo.slug}.vtt`}
+            aspect="9/16"
+          />
+          <div class="mt-4 flex items-baseline justify-between gap-3">
+            <p class="font-editorial text-xl text-[var(--color-bone)]">
+              &ldquo;{heroVideo.pullQuote}&rdquo;
+            </p>
+          </div>
+          <p class="mt-1 text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">
+            Ed Kalinowski · Owner
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= SERVICES -->
+  <section class="border-y border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] py-20 md:py-28">
+    <div class="container-page">
+      <SectionHeader
+        eyebrow="01 — What we do"
+        title="Everything a car needs after a bad day."
+        link={{ label: "All services", href: "/services/" }}
+      />
+      <ul class="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--color-ink-edge)] border border-[var(--color-ink-edge)] rounded-2xl overflow-hidden">
+        {services.map((s) => (
+          <li class="bg-[var(--color-ink-elev)] p-7 md:p-8 flex flex-col gap-3 group hover:bg-[var(--color-ink)] transition-colors">
+            <span class="numeral text-2xl">{s.n}</span>
+            <h3 class="font-display text-3xl text-[var(--color-bone)]">{s.title}</h3>
+            <p class="text-[var(--color-bone-muted)] leading-relaxed">{s.blurb}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================== BEFORE / AFTER REEL -->
+  <section class="container-page py-20 md:py-32">
+    <SectionHeader
+      eyebrow="02 — The work"
+      title="The before nobody wants. The after nobody questions."
+      deck="Drag the divider — and remember someone drove the left side into our shop."
+      link={{ label: "Full gallery", href: "/before-after/" }}
+    />
+    <div class="grid lg:grid-cols-2 gap-8 md:gap-12">
+      {beforeAfter.slice(0, 2).map((item) => (
+        <BeforeAfter item={item} />
+      ))}
+    </div>
+  </section>
+
+  <!-- =========================================================== STORIES -->
+  <section class="bg-[var(--color-ink-elev)] py-20 md:py-32 border-y border-[var(--color-ink-edge)]">
+    <div class="container-page">
+      <SectionHeader
+        eyebrow="03 — In their own words"
+        title="A shop full of repeat customers — who like coming back."
+        deck="Real customers, filmed in our lobby. Captions and full transcripts on every clip."
+        link={{ label: `All ${videos.length} stories`, href: "/stories/" }}
+      />
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        {storiesPreview.map((v) => (
+          <VideoCard video={v} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ PRESS -->
+  <section class="container-page py-20 md:py-32">
+    <div class="grid md:grid-cols-12 gap-10 items-center">
+      <div class="md:col-span-7 flex flex-col gap-6">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">As featured</p>
+        <p class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
+          FenderBender Magazine,<br />November 2025.
+        </p>
+        <p class="font-editorial text-2xl text-[var(--color-bone-muted)] max-w-xl leading-snug">
+          A case study on how Phil's recruits and mentors the next generation of collision techs.
+        </p>
+        <a
+          href="https://issuu.com/docs/509dd076e0bc3a6a969f6d64d9b2ce6b/38"
+          target="_blank"
+          rel="noopener"
+          class="self-start inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-5 py-3 rounded-full text-sm font-medium transition-colors"
+        >
+          Read on Issuu
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+      <div class="md:col-span-5">
+        <Image
+          src={sprayer}
+          alt="Master painter at work in the spray booth"
+          class="w-full max-w-sm mx-auto md:ml-auto md:mr-0"
+          widths={[400, 600, 900]}
+          sizes="(min-width: 768px) 35vw, 80vw"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== CTA -->
+  <section class="container-page pb-20 md:pb-32">
+    <div class="rounded-2xl border border-[var(--color-spark-500)]/30 bg-gradient-to-br from-[var(--color-ink-elev)] to-[var(--color-ink)] p-10 md:p-14 flex flex-col md:flex-row gap-8 md:gap-12 md:items-end justify-between">
+      <div class="flex flex-col gap-3 max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Get started</p>
+        <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
+          Bring it in. We'll handle the rest.
+        </h2>
+        <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+          Estimates are free. We work directly with your insurance — and we talk to you like you're family from the first call.
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+        <a
+          href="/contact/"
+          class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+        >
+          Schedule estimate
+        </a>
+        <a
+          href={`tel:${site.phone.tel}`}
+          class="inline-flex items-center justify-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+        >
+          {site.phone.display}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
