@@ -21,6 +21,7 @@ const roleLabel: Record<Video["role"], string> = {
 <article class="flex flex-col gap-4">
   <VimeoEmbed
     vimeoId={video.vimeoId}
+    mp4Url={video.mp4Url}
     title={`${video.speaker} — ${video.title}`}
     captions={captionPath}
   />
