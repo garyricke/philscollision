@@ -16,6 +16,12 @@
 
 export type VideoRole = "customer" | "staff" | "owner" | "neighbor";
 export type VideoFeature = "hero" | "stories" | "about";
+export type VideoTheme =
+  | "family"
+  | "repeat"
+  | "insurance"
+  | "classic"
+  | "behind";
 
 export type Video = {
   slug: string;
@@ -30,6 +36,17 @@ export type Video = {
   pullQuote: string;
   /** Where on the site the video should appear. */
   features: VideoFeature[];
+  /** Editorial themes used by the Stories filter pills. */
+  themes: VideoTheme[];
+};
+
+/** Human-readable labels for each theme — drives pill copy. */
+export const themeLabels: Record<VideoTheme, string> = {
+  family: "Family feel",
+  repeat: "Repeat customers",
+  insurance: "Insurance work",
+  classic: "Classic & custom",
+  behind: "Behind the scenes",
 };
 
 // All MP4 URLs share this prefix/suffix shape; only the ID and signature differ.
@@ -46,6 +63,7 @@ export const videos: Video[] = [
     title: "45 years in the trade",
     pullQuote: "I'm a die-and-breed in this industry.",
     features: ["hero", "about"],
+    themes: ["behind", "insurance"],
   },
   {
     slug: "ivan-master-painter",
@@ -56,6 +74,7 @@ export const videos: Video[] = [
     title: "20 years on the spray gun",
     pullQuote: "I do it with a lot of respect.",
     features: ["hero", "stories", "about"],
+    themes: ["behind"],
   },
   {
     slug: "eds-chevelle",
@@ -66,6 +85,7 @@ export const videos: Video[] = [
     title: "Four years of frame-off",
     pullQuote: "The cream of the crop. Flawless.",
     features: ["stories"],
+    themes: ["classic", "behind"],
   },
   {
     slug: "ward",
@@ -76,6 +96,7 @@ export const videos: Video[] = [
     title: "Working with the insurers",
     pullQuote: "We nail that so they're happy.",
     features: ["stories", "about"],
+    themes: ["insurance", "behind"],
   },
   {
     slug: "chef-q",
@@ -86,6 +107,7 @@ export const videos: Video[] = [
     title: "We met by accident",
     pullQuote: "If it's a ding, it ain't no thing, baby.",
     features: ["stories"],
+    themes: ["repeat", "family"],
   },
   {
     slug: "bobby-rare-lexus",
@@ -96,6 +118,7 @@ export const videos: Video[] = [
     title: "A rare Lexus, done right",
     pullQuote: "These guys are like family to me now.",
     features: ["stories"],
+    themes: ["family", "repeat", "classic"],
   },
   {
     slug: "greg-m",
@@ -106,6 +129,7 @@ export const videos: Video[] = [
     title: "Better than when it came in",
     pullQuote: "It raised the value taking it out of here.",
     features: ["stories"],
+    themes: ["family", "repeat", "insurance"],
   },
   {
     slug: "jim-n",
@@ -116,6 +140,7 @@ export const videos: Video[] = [
     title: "Through the toughest days",
     pullQuote: "We're not a client and a repair guy — we're family.",
     features: ["stories"],
+    themes: ["family", "repeat", "insurance"],
   },
   {
     slug: "rod-t",
@@ -126,6 +151,7 @@ export const videos: Video[] = [
     title: "Custom color match",
     pullQuote: "Could not be happier.",
     features: ["stories"],
+    themes: ["classic"],
   },
   {
     slug: "terry-cadillac",
@@ -136,6 +162,7 @@ export const videos: Video[] = [
     title: "Not just a PO number",
     pullQuote: "I was a customer. I was a friend.",
     features: ["stories"],
+    themes: ["family", "repeat"],
   },
   {
     slug: "gary-e",
@@ -146,6 +173,7 @@ export const videos: Video[] = [
     title: "Donuts as a thank-you",
     pullQuote: "They treat you like you're family.",
     features: ["stories"],
+    themes: ["family"],
   },
   {
     slug: "harrison-landscape",
@@ -156,6 +184,7 @@ export const videos: Video[] = [
     title: "Better than from factory",
     pullQuote: "It looked better than it did from factory.",
     features: ["stories"],
+    themes: ["family"],
   },
   {
     slug: "tim-duffin",
@@ -166,6 +195,7 @@ export const videos: Video[] = [
     title: "Twice this year",
     pullQuote: "Good people. They care about what they do.",
     features: ["stories"],
+    themes: ["family", "repeat", "insurance"],
   },
   {
     slug: "sal",
@@ -176,6 +206,7 @@ export const videos: Video[] = [
     title: "$21,000 of damage, fixed like new",
     pullQuote: "They fixed it like it was brand new.",
     features: ["stories"],
+    themes: ["repeat", "insurance"],
   },
   {
     slug: "chuck-purnick",
@@ -186,6 +217,7 @@ export const videos: Video[] = [
     title: "Three vehicles, three wins",
     pullQuote: "When he's done, the car looks better than new.",
     features: ["stories"],
+    themes: ["classic", "repeat", "insurance"],
   },
   {
     slug: "scott-allen",
@@ -196,6 +228,7 @@ export const videos: Video[] = [
     title: "The neighbor's take",
     pullQuote: "He matched us in cleanliness and finished product.",
     features: ["stories"],
+    themes: ["family", "repeat"],
   },
   {
     slug: "terry-martha-haley",
@@ -206,6 +239,7 @@ export const videos: Video[] = [
     title: "Married 53 years, customers since the accident",
     pullQuote: "You'd have thought we'd known him forever.",
     features: ["stories"],
+    themes: ["family"],
   },
 ];
 
@@ -214,5 +248,5 @@ export const storyVideos = videos.filter((v) => v.features.includes("stories"));
 export const aboutVideos = videos.filter((v) => v.features.includes("about"));
 
 export const vimeoThumbnailUrl = (vimeoId: string) =>
-  // vumbnail.com is a thin public redirector to Vimeo's hosted thumbnail.
-  `https://vumbnail.com/${vimeoId}.jpg`;
+  // Portrait thumbnails are pre-fetched by scripts/generate-thumbs.mjs.
+  `/thumbs/${vimeoId}.jpg`;

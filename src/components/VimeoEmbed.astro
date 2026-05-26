@@ -41,7 +41,6 @@ const thumb = vimeoThumbnailUrl(vimeoId);
   data-mp4={mp4Url}
   data-poster={thumb}
   data-title={title}
-  data-captions={captions ?? ""}
 >
   <button
     type="button"
@@ -65,8 +64,8 @@ const thumb = vimeoThumbnailUrl(vimeoId);
       class="absolute inset-0 flex items-center justify-center"
       aria-hidden="true"
     >
-      <span class="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-[var(--color-bone)]/95 text-[var(--color-ink)] shadow-2xl transition-transform duration-300 group-hover:scale-110">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <span class="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-[var(--color-bone)] text-[var(--color-bone)] backdrop-blur-[1px] shadow-2xl transition-transform duration-300 group-hover:scale-110 group-hover:bg-[var(--color-bone)]/15">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" class="translate-x-[2px]">
           <path d="M8 5v14l11-7z"/>
         </svg>
       </span>
@@ -75,15 +74,29 @@ const thumb = vimeoThumbnailUrl(vimeoId);
 </div>
 
 <script>
+  // Pause every active story video on the page. Called when another video
+  // starts, or when a "videos:stop" event is dispatched (e.g. from a filter
+  // pill). The hero loop video is not a .video-facade and is unaffected.
+  const pauseAllStoryVideos = () => {
+    document
+      .querySelectorAll<HTMLVideoElement>(".video-facade video")
+      .forEach((v) => {
+        if (!v.paused) v.pause();
+      });
+  };
+  document.addEventListener("videos:stop", pauseAllStoryVideos);
+
   // One delegated listener for every video on the page.
   document.addEventListener("click", (e) => {
     const target = e.target as Element | null;
     const facade = target?.closest(".video-facade") as HTMLElement | null;
     if (!facade || facade.querySelector("video")) return;
 
+    // Stop any other story video that's currently playing.
+    pauseAllStoryVideos();
+
     const mp4 = facade.dataset.mp4;
     const poster = facade.dataset.poster ?? "";
-    const captions = facade.dataset.captions ?? "";
     const title = facade.dataset.title ?? "Video";
     if (!mp4) return;
 
@@ -100,16 +113,6 @@ const thumb = vimeoThumbnailUrl(vimeoId);
     source.src = mp4;
     source.type = "video/mp4";
     video.appendChild(source);
-
-    if (captions) {
-      const track = document.createElement("track");
-      track.kind = "captions";
-      track.srclang = "en";
-      track.label = "English";
-      track.src = captions;
-      track.default = true;
-      video.appendChild(track);
-    }
 
     facade.replaceChildren(video);
     video.play().catch(() => {

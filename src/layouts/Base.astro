@@ -22,13 +22,14 @@ const {
   title,
   description = site.description,
   path,
-  ogImage = "/og.jpg",
+  ogImage = "https://res.cloudinary.com/dsbllwpbh/image/upload/f_auto,q_auto,w_1200/phils-collision/og",
   extraJsonLd,
 } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : site.name;
 const canonical = new URL(path, site.url).toString();
-const ogImageUrl = new URL(ogImage, site.url).toString();
+// Absolute URLs pass through; root-relative paths are resolved against the site origin.
+const ogImageUrl = ogImage.startsWith("http") ? ogImage : new URL(ogImage, site.url).toString();
 
 // LocalBusiness / AutoBodyShop schema — sits on every page so any URL is a
 // valid landing page for local search.

@@ -3,26 +3,59 @@ import { Image } from "astro:assets";
 import Base from "~/layouts/Base.astro";
 import SectionHeader from "~/components/SectionHeader.astro";
 import VideoCard from "~/components/VideoCard.astro";
-import VimeoEmbed from "~/components/VimeoEmbed.astro";
 import BeforeAfter from "~/components/BeforeAfter.astro";
 import { site } from "~/data/site.ts";
-import { heroVideos, storyVideos, videos } from "~/data/videos.ts";
-import { beforeAfter } from "~/data/beforeAfter.ts";
-import sprayer from "~/assets/images/sprayer-on-dark.png";
+import { videos, storyVideos, themeLabels, type VideoTheme } from "~/data/videos.ts";
 
-// Home page picks: the owner's story as the hero video, Ivan as the secondary,
-// and a curated 6-video reel for the stories teaser.
-const heroVideo = videos.find((v) => v.slug === "eds-story")!;
-const storiesPreview = [
-  "bobby-rare-lexus",
-  "jim-n",
-  "chef-q",
-  "ivan-master-painter",
-  "rod-t",
-  "scott-allen",
+const homeThemeCounts = (Object.keys(themeLabels) as VideoTheme[])
+  .map((key) => ({
+    key,
+    label: themeLabels[key],
+    count: storyVideos.filter((v) => v.themes.includes(key)).length,
+  }))
+  .filter((t) => t.count > 0)
+  .sort((a, b) => b.count - a.count);
+import { beforeAfter } from "~/data/beforeAfter.ts";
+import { reviews, reviewImageUrl } from "~/data/reviews.ts";
+import { faqs } from "~/data/faqs.ts";
+
+// Surface a curated subset of FAQs on the home page; the full list lives at /faqs/.
+const featuredFaqs = [
+  "Do I have to use the body shop my insurance recommends?",
+  "How long does a free estimate take?",
+  "Can you handle the insurance claim for me?",
+  "Do you offer a warranty?",
+  "How long will my car be in the shop?",
+  "What happens if you find more damage once you start the repair?",
 ]
-  .map((slug) => videos.find((v) => v.slug === slug)!)
+  .map((q) => faqs.find((f) => f.q === q)!)
   .filter(Boolean);
+// FenderBender feature media — image hosted on Cloudinary (f_auto/q_auto serves
+// WebP/AVIF + automatic quality based on the requesting browser).
+const fenderArticle = {
+  base: "https://res.cloudinary.com/dsbllwpbh/image/upload",
+  publicId: "phils-collision/fender-bender-article-2025",
+};
+const fenderArticleUrl = (w: number) =>
+  `${fenderArticle.base}/f_auto,q_auto,w_${w}/${fenderArticle.publicId}`;
+
+// Chapter markers for the FenderBender audio deep-dive.
+// Timestamps derived from a full transcript of the clip.
+const fenderAudio = {
+  src: "https://res.cloudinary.com/dsbllwpbh/video/upload/v1779759281/Fixing_the_Talent_Crisis__How_One_Collision_Shop_Attracts_and_K_x5ckdn.m4a",
+  chapters: [
+    { t: 0, label: "The talent crisis" },
+    { t: 46, label: "Ed's 45-year background" },
+    { t: 100, label: "The hiring challenge" },
+    { t: 200, label: "Recruiting from VoTech" },
+    { t: 222, label: "150 years of mentorship" },
+    { t: 275, label: "I-CAR training" },
+    { t: 326, label: "Trust equity & Sunday shop time" },
+    { t: 443, label: "Top-tier equipment" },
+    { t: 524, label: "Reinvesting in people" },
+    { t: 582, label: "The takeaway" },
+  ],
+};
 
 const services = [
   {
@@ -53,74 +86,51 @@ const services = [
   description="Phil's Collision Center — family-run auto body shop in Schererville, Indiana. I-CAR certified, State Farm DRP, lifetime warranty. 45 years of craftsmanship."
 >
   <!-- ============================================================== HERO -->
-  <section class="container-page pt-12 md:pt-20 pb-20 md:pb-32">
-    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-      <div class="lg:col-span-7 flex flex-col gap-7">
-        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium flex items-center gap-3">
-          <span class="inline-block h-px w-8 bg-[var(--color-spark-500)]"></span>
-          Schererville, IN
-          <span class="slash"></span>
-          Since 1981
-        </p>
-        <h1 class="font-display text-[var(--text-display-2xl)] text-[var(--color-bone)] leading-[0.9]">
-          Transforming<br />
-          accidents into<br />
-          <span class="text-[var(--color-spark-500)]">masterpieces.</span>
-        </h1>
-        <p class="font-editorial text-2xl md:text-3xl text-[var(--color-bone-muted)] max-w-xl leading-snug">
-          A 45-year, family-run collision shop where the painter has been on the spray gun for two decades and the owner still talks to every customer.
-        </p>
-        <div class="flex flex-wrap gap-3 mt-2">
-          <a
-            href="/contact/"
-            class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
-          >
-            Free estimate
-            <span aria-hidden="true">→</span>
-          </a>
-          <a
-            href={`tel:${site.phone.tel}`}
-            class="inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
-          >
-            {site.phone.display}
-          </a>
-        </div>
+  <section class="relative isolate overflow-hidden min-h-[88vh] flex flex-col justify-between bg-[var(--color-ink)]">
+    <video
+      id="hero-video"
+      class="absolute inset-0 w-full h-full object-cover -z-10 brightness-110"
+      src="/assets/videos/hero-repair.mp4"
+      poster="/assets/videos/hero-repair-poster.jpg"
+      autoplay
+      muted
+      playsinline
+      preload="metadata"
+      aria-label="A wrecked red sports car reassembles into a flawless finish."
+    ></video>
+    <!-- Soft vignettes: just enough at top + bottom to hold the type, car stays bright in the middle -->
+    <div class="absolute inset-x-0 top-0 h-1/3 -z-10 bg-gradient-to-b from-[var(--color-ink)]/85 to-transparent"></div>
+    <div class="absolute inset-x-0 bottom-0 h-1/3 -z-10 bg-gradient-to-t from-[var(--color-ink)]/85 to-transparent"></div>
 
-        <!-- Trust strip -->
-        <dl class="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-[var(--color-ink-edge)]">
-          <div>
-            <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Years</dt>
-            <dd class="font-display text-4xl md:text-5xl text-[var(--color-bone)] mt-1">45+</dd>
-          </div>
-          <div>
-            <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Google reviews</dt>
-            <dd class="font-display text-4xl md:text-5xl text-[var(--color-bone)] mt-1">253</dd>
-          </div>
-          <div>
-            <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Vehicles past us / day</dt>
-            <dd class="font-display text-4xl md:text-5xl text-[var(--color-bone)] mt-1">80k</dd>
-          </div>
-        </dl>
-      </div>
+    <!-- Top: headline -->
+    <div class="container-page relative w-full pt-24 md:pt-28 text-center">
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[var(--color-bone)] leading-[0.9] drop-shadow-[0_2px_24px_rgba(0,0,0,0.75)] mx-auto max-w-4xl">
+        Transforming accidents into
+        <span class="text-[var(--color-spark-500)]">masterpieces.</span>
+      </h1>
+    </div>
 
-      <div class="lg:col-span-5 lg:pl-8">
-        <div class="max-w-sm mx-auto lg:ml-auto lg:mr-0">
-          <VimeoEmbed
-            vimeoId={heroVideo.vimeoId}
-            mp4Url={heroVideo.mp4Url}
-            title={`${heroVideo.speaker} — ${heroVideo.title}`}
-            captions={`/captions/${heroVideo.slug}.vtt`}
-            aspect="9/16"
-          />
-          <div class="mt-4 flex items-baseline justify-between gap-3">
-            <p class="font-editorial text-xl text-[var(--color-bone)]">
-              &ldquo;{heroVideo.pullQuote}&rdquo;
-            </p>
-          </div>
-          <p class="mt-1 text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">
-            Ed Kalinowski · Owner
-          </p>
-        </div>
+    <!-- Bottom: services + CTAs -->
+    <div class="container-page relative w-full pb-14 md:pb-16 flex flex-col items-center gap-7 text-center">
+      <p class="text-sm md:text-base uppercase tracking-[0.3em] text-[var(--color-bone)] font-medium drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
+        Collision Repair <span class="text-[var(--color-spark-500)] mx-2">·</span>
+        Detailing <span class="text-[var(--color-spark-500)] mx-2">·</span>
+        Mechanical
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a
+          href="/contact/"
+          class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+        >
+          Free estimate
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href={`tel:${site.phone.tel}`}
+          class="inline-flex items-center gap-2 border border-[var(--color-bone)]/40 hover:border-[var(--color-bone)] bg-[var(--color-ink)]/40 backdrop-blur-sm text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+        >
+          {site.phone.display}
+        </a>
       </div>
     </div>
   </section>
@@ -166,47 +176,583 @@ const services = [
       <SectionHeader
         eyebrow="03 — In their own words"
         title="A shop full of repeat customers — who like coming back."
-        deck="Real customers, filmed in our lobby. Captions and full transcripts on every clip."
         link={{ label: `All ${videos.length} stories`, href: "/stories/" }}
       />
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-        {storiesPreview.map((v) => (
-          <VideoCard video={v} />
+
+      <!-- Filter pills -->
+      <div
+        id="home-stories-filters"
+        class="flex flex-wrap gap-2 mb-8 md:mb-10"
+        role="tablist"
+        aria-label="Filter stories by theme"
+      >
+        <button
+          type="button"
+          data-theme="all"
+          aria-pressed="true"
+          class="story-pill is-active inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors"
+        >
+          All
+          <span class="text-xs opacity-70 tabular-nums">{storyVideos.length}</span>
+        </button>
+        {homeThemeCounts.map(({ key, label, count }) => (
+          <button
+            type="button"
+            data-theme={key}
+            aria-pressed="false"
+            class="story-pill inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors"
+          >
+            {label}
+            <span class="text-xs opacity-70 tabular-nums">{count}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="relative">
+      <div
+        id="stories-rail"
+        class="stories-rail flex gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory pl-5 md:pl-8 pr-5 md:pr-8 pb-3 scroll-smooth"
+      >
+        {storyVideos.map((v) => (
+          <div class="story-card snap-start shrink-0 w-56 md:w-64 lg:w-72" data-themes={v.themes.join(" ")}>
+            <VideoCard video={v} />
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        data-rail-btn="prev"
+        data-rail-target="stories-rail"
+        aria-label="Previous stories"
+        class="hidden md:flex absolute left-4 top-[38%] -translate-y-1/2 items-center justify-center w-16 h-16 rounded-full bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] transition-all shadow-2xl shadow-black/50 hover:scale-105"
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-rail-btn="next"
+        data-rail-target="stories-rail"
+        aria-label="Next stories"
+        class="hidden md:flex absolute right-4 top-[38%] -translate-y-1/2 items-center justify-center w-16 h-16 rounded-full bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] transition-all shadow-2xl shadow-black/50 hover:scale-105"
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <style>
+    .stories-rail {
+      scrollbar-width: none;
+    }
+    .stories-rail::-webkit-scrollbar {
+      display: none;
+    }
+    .story-pill {
+      background: var(--color-ink);
+      border-color: var(--color-ink-edge);
+      color: var(--color-bone-muted);
+    }
+    .story-pill:hover {
+      color: var(--color-bone);
+      border-color: var(--color-bone-muted);
+    }
+    .story-pill.is-active {
+      background: var(--color-spark-500);
+      border-color: var(--color-spark-500);
+      color: var(--color-bone);
+    }
+    .story-pill.is-active:hover {
+      background: var(--color-spark-600);
+      border-color: var(--color-spark-600);
+    }
+    .story-card.is-hidden {
+      display: none;
+    }
+  </style>
+
+  <script>
+    const rail = document.getElementById("stories-rail");
+    document.querySelectorAll<HTMLButtonElement>("[data-rail-btn]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.dataset.railTarget ?? "stories-rail";
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        const dir = btn.dataset.railBtn === "prev" ? -1 : 1;
+        target.scrollBy({ left: target.clientWidth * 0.8 * dir, behavior: "smooth" });
+      });
+    });
+
+    const homePills = document.querySelectorAll<HTMLButtonElement>(
+      "#home-stories-filters .story-pill",
+    );
+    const homeCards = document.querySelectorAll<HTMLElement>(
+      "#stories-rail .story-card",
+    );
+    homePills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const theme = pill.dataset.theme ?? "all";
+        homePills.forEach((p) => {
+          p.classList.remove("is-active");
+          p.setAttribute("aria-pressed", "false");
+        });
+        pill.classList.add("is-active");
+        pill.setAttribute("aria-pressed", "true");
+        homeCards.forEach((card) => {
+          const themes = (card.dataset.themes ?? "").split(" ").filter(Boolean);
+          card.classList.toggle("is-hidden", theme !== "all" && !themes.includes(theme));
+        });
+        rail?.scrollTo({ left: 0, behavior: "smooth" });
+        document.dispatchEvent(new CustomEvent("videos:stop"));
+      });
+    });
+  </script>
+
+  <!-- ============================================================ PRESS -->
+  <section class="container-page py-20 md:py-32">
+    <div class="flex flex-col gap-10 md:gap-14 max-w-5xl mx-auto">
+      <header class="flex flex-col gap-5 text-center">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">As featured</p>
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-[var(--color-bone)] leading-[0.95]">
+          FenderBender Magazine, November 2025
+        </h2>
+        <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone-muted)] max-w-2xl mx-auto leading-snug">
+          A case study on how Phil's recruits and mentors the next generation of collision techs.
+        </p>
+      </header>
+
+      <div class="rounded-2xl overflow-hidden border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)]">
+        <img
+          src={fenderArticleUrl(1280)}
+          srcset={`${fenderArticleUrl(640)} 640w, ${fenderArticleUrl(960)} 960w, ${fenderArticleUrl(1280)} 1280w, ${fenderArticleUrl(1600)} 1600w`}
+          sizes="(min-width: 1024px) 960px, 100vw"
+          alt="FenderBender Magazine cover featuring Ed Kalinowski's son and the article spread &lsquo;Creating a Career Path for Gen Z Techs&rsquo;"
+          class="w-full h-auto"
+          loading="lazy"
+          decoding="async"
+          width="1412"
+          height="1038"
+        />
+      </div>
+
+      <!-- Audio deep-dive with chapter markers -->
+      <div class="rounded-2xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-6 md:p-8 flex flex-col gap-6">
+        <div class="flex items-baseline justify-between gap-4 flex-wrap">
+          <div class="flex flex-col gap-1">
+            <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Audio deep-dive</p>
+            <h3 class="font-display text-2xl md:text-3xl text-[var(--color-bone)]">
+              Fixing the talent crisis
+            </h3>
+          </div>
+          <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">11 min · podcast</span>
+        </div>
+
+        <!-- Player -->
+        <div class="fb-player flex flex-col gap-3" data-src={fenderAudio.src}>
+          <audio class="fb-audio sr-only" preload="metadata" src={fenderAudio.src}></audio>
+
+          <div class="flex items-center gap-4">
+            <button
+              type="button"
+              class="fb-play flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] transition-colors shrink-0"
+              aria-label="Play"
+            >
+              <svg class="fb-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <svg class="fb-icon-pause hidden" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+              </svg>
+            </button>
+
+            <div class="flex-1 flex flex-col gap-1.5 min-w-0">
+              <div class="fb-scrub relative h-2 rounded-full bg-[var(--color-ink-edge)] cursor-pointer overflow-hidden">
+                <div class="fb-progress absolute inset-y-0 left-0 w-0 bg-[var(--color-spark-500)] rounded-full"></div>
+              </div>
+              <div class="flex justify-between text-xs tabular-nums text-[var(--color-bone-muted)]">
+                <span class="fb-current">0:00</span>
+                <span class="fb-duration">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chapter list -->
+          <ol class="fb-chapters flex flex-col gap-1 pt-2">
+            {fenderAudio.chapters.map((c, i) => (
+              <li>
+                <button
+                  type="button"
+                  data-t={c.t}
+                  data-idx={i}
+                  class="fb-chapter group w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-left text-sm border border-transparent hover:bg-[var(--color-ink)] hover:border-[var(--color-ink-edge)] transition-colors"
+                >
+                  <span class="flex items-center gap-3 min-w-0">
+                    <span class="fb-chapter-dot w-1.5 h-1.5 rounded-full bg-[var(--color-bone-dim)] shrink-0"></span>
+                    <span class="text-[var(--color-bone-muted)] group-hover:text-[var(--color-bone)] truncate">{c.label}</span>
+                  </span>
+                  <span class="text-xs tabular-nums text-[var(--color-bone-dim)] shrink-0">
+                    {Math.floor(c.t / 60)}:{String(c.t % 60).padStart(2, "0")}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      <a
+        href="https://issuu.com/docs/509dd076e0bc3a6a969f6d64d9b2ce6b/38"
+        target="_blank"
+        rel="noopener"
+        class="self-center inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-5 py-3 rounded-full text-sm font-medium transition-colors"
+      >
+        Read the full article on Issuu
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <style>
+    .fb-chapter.is-active {
+      background: var(--color-ink);
+      border-color: var(--color-spark-500);
+    }
+    .fb-chapter.is-active .fb-chapter-dot {
+      background: var(--color-spark-500);
+    }
+    .fb-chapter.is-active span {
+      color: var(--color-bone);
+    }
+  </style>
+
+  <script>
+    const fmt = (s: number) => {
+      if (!isFinite(s)) return "—";
+      const m = Math.floor(s / 60);
+      const r = Math.floor(s % 60);
+      return `${m}:${String(r).padStart(2, "0")}`;
+    };
+
+    const player = document.querySelector<HTMLElement>(".fb-player");
+    if (player) {
+      const audio = player.querySelector<HTMLAudioElement>(".fb-audio")!;
+      const playBtn = player.querySelector<HTMLButtonElement>(".fb-play")!;
+      const iconPlay = player.querySelector<HTMLElement>(".fb-icon-play")!;
+      const iconPause = player.querySelector<HTMLElement>(".fb-icon-pause")!;
+      const scrub = player.querySelector<HTMLElement>(".fb-scrub")!;
+      const progress = player.querySelector<HTMLElement>(".fb-progress")!;
+      const cur = player.querySelector<HTMLElement>(".fb-current")!;
+      const dur = player.querySelector<HTMLElement>(".fb-duration")!;
+      const chapters = Array.from(
+        player.querySelectorAll<HTMLButtonElement>(".fb-chapter"),
+      );
+      const chapterTimes = chapters.map((c) => Number(c.dataset.t ?? 0));
+
+      const setActiveChapter = (time: number) => {
+        let active = 0;
+        for (let i = 0; i < chapterTimes.length; i++) {
+          if (time >= chapterTimes[i]) active = i;
+          else break;
+        }
+        chapters.forEach((c, i) => c.classList.toggle("is-active", i === active));
+      };
+
+      playBtn.addEventListener("click", () => {
+        if (audio.paused) audio.play();
+        else audio.pause();
+      });
+
+      audio.addEventListener("play", () => {
+        iconPlay.classList.add("hidden");
+        iconPause.classList.remove("hidden");
+        playBtn.setAttribute("aria-label", "Pause");
+      });
+      audio.addEventListener("pause", () => {
+        iconPlay.classList.remove("hidden");
+        iconPause.classList.add("hidden");
+        playBtn.setAttribute("aria-label", "Play");
+      });
+
+      audio.addEventListener("loadedmetadata", () => {
+        dur.textContent = fmt(audio.duration);
+      });
+      audio.addEventListener("timeupdate", () => {
+        const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+        progress.style.width = `${pct}%`;
+        cur.textContent = fmt(audio.currentTime);
+        setActiveChapter(audio.currentTime);
+      });
+
+      const seekFromEvent = (clientX: number) => {
+        const rect = scrub.getBoundingClientRect();
+        const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+        if (isFinite(audio.duration)) audio.currentTime = pct * audio.duration;
+      };
+      scrub.addEventListener("click", (e) => seekFromEvent(e.clientX));
+
+      chapters.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const t = Number(btn.dataset.t ?? 0);
+          audio.currentTime = t;
+          if (audio.paused) audio.play();
+        });
+      });
+
+      setActiveChapter(0);
+    }
+  </script>
+
+  <!-- ======================================================== TESTIMONIALS -->
+  <section
+    id="testimonials"
+    class="relative isolate overflow-hidden border-y border-[var(--color-ink-edge)] bg-[var(--color-ink)]"
+    aria-roledescription="carousel"
+    aria-label="Customer testimonials"
+  >
+    <!-- Slide stack: each slide is a layered background image; the headline + quote sit on top as overlays. -->
+    <div class="relative h-[44rem] md:h-[48rem]">
+      {reviews.map((r, i) => (
+        <div
+          class:list={["testimonial-slide absolute inset-0 transition-opacity duration-700 ease-out", i === 0 && "is-active"]}
+          data-idx={i}
+          aria-hidden={i === 0 ? "false" : "true"}
+        >
+          <img
+            src={reviewImageUrl(r.image, 1600)}
+            srcset={`${reviewImageUrl(r.image, 960)} 960w, ${reviewImageUrl(r.image, 1600)} 1600w, ${reviewImageUrl(r.image, 2200)} 2200w`}
+            sizes="100vw"
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 w-full h-full object-cover"
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding="async"
+          />
+        </div>
+      ))}
+
+      <!-- Legibility washes sit above the rotating images, below the type. -->
+      <div class="absolute inset-0 bg-[var(--color-ink)]/25 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="background: radial-gradient(ellipse 70% 55% at 50% 60%, rgba(11,11,13,0.7) 0%, rgba(11,11,13,0.35) 45%, rgba(11,11,13,0) 80%);"
+      ></div>
+      <div class="absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-[var(--color-ink)]/85 to-transparent pointer-events-none"></div>
+      <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--color-ink)]/85 to-transparent pointer-events-none"></div>
+
+      <!-- Static section header — sits above the rotating quotes, doesn't change. -->
+      <div class="container-page absolute inset-x-0 top-0 z-10 pt-14 md:pt-20 flex flex-col items-center text-center gap-3">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">04 — What people are saying</p>
+        <h2 class="font-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-bone)] leading-[0.95] [text-shadow:0_2px_16px_rgba(0,0,0,0.7)]">
+          Five stars. Two hundred and fifty-three times.
+        </h2>
+        <a
+          href={site.social.google}
+          target="_blank"
+          rel="noopener"
+          class="mt-1 text-sm text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors group"
+        >
+          All reviews on Google
+          <span class="inline-block transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <!-- Rotating quote layer — only this changes per slide. -->
+      {reviews.map((r, i) => (
+        <article
+          class:list={["testimonial-quote container-page absolute inset-0 z-10 flex flex-col justify-center items-center text-center pt-32 md:pt-48 pb-24 transition-opacity duration-700 ease-out", i === 0 && "is-active"]}
+          data-quote-idx={i}
+          aria-roledescription="slide"
+          aria-label={`${i + 1} of ${reviews.length}`}
+        >
+          <div class="flex gap-1 text-[var(--color-spark-500)] mb-6" aria-label="5 out of 5 stars">
+            {Array.from({ length: 5 }).map(() => (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l2.95 6.36L22 9.27l-5.18 4.73L18.18 22 12 18.27 5.82 22 7.18 14 2 9.27l7.05-.91L12 2z"/>
+              </svg>
+            ))}
+          </div>
+          <blockquote class="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[var(--color-bone)] leading-[1.1] max-w-5xl [text-shadow:0_2px_18px_rgba(0,0,0,0.85),0_0_40px_rgba(0,0,0,0.4)]">
+            &ldquo;{r.quote}&rdquo;
+          </blockquote>
+          <footer class="mt-8 flex flex-col items-center gap-1">
+            <p class="text-base md:text-lg font-medium text-[var(--color-bone)] [text-shadow:0_2px_8px_rgba(0,0,0,0.7)]">{r.name}</p>
+            <p class="text-xs uppercase tracking-[0.25em] text-[var(--color-bone-muted)]">{r.when} · Google review</p>
+          </footer>
+        </article>
+      ))}
+    </div>
+
+    <!-- Dot indicators + play/pause -->
+    <div class="container-page relative z-20 pb-12 md:pb-16 -mt-6 md:-mt-8 flex items-center justify-center gap-6">
+      <button
+        type="button"
+        id="testimonials-toggle"
+        aria-label="Pause testimonial auto-advance"
+        class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-[var(--color-bone)]/25 hover:border-[var(--color-bone)]/60 bg-[var(--color-ink)]/40 backdrop-blur text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors"
+      >
+        <svg class="t-icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+        </svg>
+        <svg class="t-icon-play hidden" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+      <div class="flex items-center gap-2" role="tablist" aria-label="Choose a testimonial">
+        {reviews.map((_, i) => (
+          <button
+            type="button"
+            data-dot={i}
+            aria-label={`Show testimonial ${i + 1}`}
+            class:list={["testimonial-dot w-2.5 h-2.5 rounded-full transition-all", i === 0 ? "is-active" : ""]}
+          ></button>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ============================================================ PRESS -->
+  <style>
+    .testimonial-slide,
+    .testimonial-quote {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .testimonial-slide.is-active,
+    .testimonial-quote.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .testimonial-dot {
+      background: rgba(245, 243, 239, 0.25);
+    }
+    .testimonial-dot:hover {
+      background: rgba(245, 243, 239, 0.6);
+    }
+    .testimonial-dot.is-active {
+      background: var(--color-spark-500);
+      width: 1.75rem;
+    }
+  </style>
+
+  <script>
+    const section = document.getElementById("testimonials");
+    if (section) {
+      const slides = Array.from(section.querySelectorAll<HTMLElement>(".testimonial-slide"));
+      const quotes = Array.from(section.querySelectorAll<HTMLElement>(".testimonial-quote"));
+      const dots = Array.from(section.querySelectorAll<HTMLButtonElement>(".testimonial-dot"));
+      const toggle = section.querySelector<HTMLButtonElement>("#testimonials-toggle");
+      const playIcon = toggle?.querySelector<HTMLElement>(".t-icon-play");
+      const pauseIcon = toggle?.querySelector<HTMLElement>(".t-icon-pause");
+
+      let current = 0;
+      let timer: number | undefined;
+      let playing = true;
+      const INTERVAL = 6000;
+
+      const show = (idx: number) => {
+        slides.forEach((s, i) => s.classList.toggle("is-active", i === idx));
+        quotes.forEach((q, i) => q.classList.toggle("is-active", i === idx));
+        dots.forEach((d, i) => d.classList.toggle("is-active", i === idx));
+        current = idx;
+      };
+      const next = () => show((current + 1) % slides.length);
+
+      const start = () => {
+        window.clearInterval(timer);
+        timer = window.setInterval(next, INTERVAL);
+      };
+      const stop = () => window.clearInterval(timer);
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener("click", () => {
+          show(i);
+          if (playing) start();
+        });
+      });
+
+      toggle?.addEventListener("click", () => {
+        playing = !playing;
+        if (playing) {
+          start();
+          playIcon?.classList.add("hidden");
+          pauseIcon?.classList.remove("hidden");
+          toggle.setAttribute("aria-label", "Pause testimonial auto-advance");
+        } else {
+          stop();
+          playIcon?.classList.remove("hidden");
+          pauseIcon?.classList.add("hidden");
+          toggle.setAttribute("aria-label", "Resume testimonial auto-advance");
+        }
+      });
+
+      // Pause when off-screen, resume when back, courteous + saves CPU.
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!playing) continue;
+            if (e.isIntersecting) start();
+            else stop();
+          }
+        },
+        { threshold: 0.25 },
+      );
+      io.observe(section);
+
+      // Pause on hover for readability.
+      section.addEventListener("mouseenter", () => playing && stop());
+      section.addEventListener("mouseleave", () => playing && start());
+
+      start();
+    }
+  </script>
+
+  <!-- ============================================================== FAQS -->
   <section class="container-page py-20 md:py-32">
-    <div class="grid md:grid-cols-12 gap-10 items-center">
-      <div class="md:col-span-7 flex flex-col gap-6">
-        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">As featured</p>
-        <p class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
-          FenderBender Magazine,<br />November 2025.
-        </p>
-        <p class="font-editorial text-2xl text-[var(--color-bone-muted)] max-w-xl leading-snug">
-          A case study on how Phil's recruits and mentors the next generation of collision techs.
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+      <div class="lg:col-span-4 flex flex-col gap-5">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">05 — FAQ</p>
+        <h2 class="font-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-bone)] leading-[0.95]">
+          What people ask before bringing a car in.
+        </h2>
+        <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+          If yours isn't here, call us — we'd rather answer it over the phone.
         </p>
         <a
-          href="https://issuu.com/docs/509dd076e0bc3a6a969f6d64d9b2ce6b/38"
-          target="_blank"
-          rel="noopener"
-          class="self-start inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-5 py-3 rounded-full text-sm font-medium transition-colors"
+          href="/faqs/"
+          class="self-start mt-2 inline-flex items-center gap-2 text-sm text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors group"
         >
-          Read on Issuu
-          <span aria-hidden="true">↗</span>
+          See all FAQs
+          <span class="inline-block transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
         </a>
       </div>
-      <div class="md:col-span-5">
-        <Image
-          src={sprayer}
-          alt="Master painter at work in the spray booth"
-          class="w-full max-w-sm mx-auto md:ml-auto md:mr-0"
-          widths={[400, 600, 900]}
-          sizes="(min-width: 768px) 35vw, 80vw"
-        />
-      </div>
+
+      <ul class="lg:col-span-8 flex flex-col">
+        {featuredFaqs.map((f, i) => (
+          <li class="border-t border-[var(--color-ink-edge)] last:border-b">
+            <details class="group">
+              <summary class="cursor-pointer list-none py-6 flex items-start gap-5">
+                <span class="numeral text-lg shrink-0 mt-1">{String(i + 1).padStart(2, "0")}</span>
+                <span class="flex-1 font-display text-xl md:text-2xl text-[var(--color-bone)] leading-tight">
+                  {f.q}
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="shrink-0 mt-1 text-[var(--color-bone-muted)] transition-transform duration-300 group-open:rotate-45 text-2xl leading-none"
+                >+</span>
+              </summary>
+              <div class="pb-7 pl-12 pr-8 text-[var(--color-bone-muted)] leading-relaxed">
+                {f.a}
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 
@@ -215,7 +761,7 @@ const services = [
     <div class="rounded-2xl border border-[var(--color-spark-500)]/30 bg-gradient-to-br from-[var(--color-ink-elev)] to-[var(--color-ink)] p-10 md:p-14 flex flex-col md:flex-row gap-8 md:gap-12 md:items-end justify-between">
       <div class="flex flex-col gap-3 max-w-2xl">
         <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Get started</p>
-        <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95]">
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-[var(--color-bone)] leading-[0.95]">
           Bring it in. We'll handle the rest.
         </h2>
         <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
@@ -238,4 +784,16 @@ const services = [
       </div>
     </div>
   </section>
+
+  <script>
+    const v = document.getElementById("hero-video") as HTMLVideoElement | null;
+    if (v) {
+      v.addEventListener("ended", () => {
+        window.setTimeout(() => {
+          v.currentTime = 0;
+          v.play().catch(() => {});
+        }, 3000);
+      });
+    }
+  </script>
 </Base>

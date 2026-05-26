@@ -44,6 +44,18 @@ export const faqs: Faq[] = [
   },
   {
     q: "How do I care for fresh paint?",
-    a: "Wait 30 days before machine washing or waxing. In that window, hand wash with mild soap, avoid commercial brush washes, and keep tree sap and bird droppings off the finish.",
+    a: "Our booth bakes the paint, so it's fine to hand wash right away — but skip commercial brush washes, and don't wax for about three months while the finish fully cures.",
+  },
+  {
+    q: "What should I bring to my estimate?",
+    a: "Anything you've already received from the insurance company: emails, prior estimates, claim numbers, the adjuster's name and phone, and any pre-issued insurance checks. If you don't have any of that, no problem — just come in.",
+  },
+  {
+    q: "What happens if you find more damage once you start the repair?",
+    a: "It's very common — insurance estimates can only include what's visible in photos. Once we take the damaged area apart, we document any hidden damage with photos and submit a supplement to your insurer for approval. We keep you in the loop throughout.",
+  },
+  {
+    q: "What if I notice something isn't right after I pick up my car?",
+    a: "Call us or bring it back. Our goal is to restore your car to pre-accident condition, and the lifetime warranty backs that up — we'll make it right.",
   },
 ];

@@ -1,5 +1,6 @@
 ---
 import { primaryNav, site } from "~/data/site.ts";
+import { cld, cldSrcSet } from "~/data/cloudinary.ts";
 
 const current = Astro.url.pathname;
 const isActive = (href: string) =>
@@ -8,16 +9,17 @@ const isActive = (href: string) =>
 
 <header class="sticky top-0 z-40 bg-[var(--color-ink)]/85 backdrop-blur-md border-b border-[var(--color-ink-edge)]">
   <div class="container-page flex items-center justify-between gap-6 h-16 md:h-20">
-    <!-- Wordmark — text-based so it remains crisp at any size -->
-    <a
-      href="/"
-      class="font-display text-2xl md:text-[1.65rem] tracking-tight text-[var(--color-bone)] leading-none flex items-baseline gap-1"
-      aria-label={`${site.name} — home`}
-    >
-      Phil's<span class="text-[var(--color-spark-500)]">.</span>
-      <span class="hidden sm:inline text-[var(--color-bone-muted)] text-base md:text-lg tracking-normal font-sans font-normal ml-2">
-        Collision Center
-      </span>
+    <a href="/" class="flex items-center" aria-label={`${site.name} — home`}>
+      <img
+        src={cld("logo", 240)}
+        srcset={cldSrcSet("logo", [160, 240, 320])}
+        sizes="(min-width: 768px) 160px, 120px"
+        alt={site.name}
+        height="64"
+        class="h-10 md:h-14 w-auto"
+        loading="eager"
+        decoding="async"
+      />
     </a>
 
     <!-- Desktop nav -->

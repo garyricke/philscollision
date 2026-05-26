@@ -1,12 +1,14 @@
 ---
-import { Image } from "astro:assets";
 import type { BeforeAfterItem } from "~/data/beforeAfter.ts";
+import { cld, cldSrcSet } from "~/data/cloudinary.ts";
 
 export interface Props {
   item: BeforeAfterItem;
 }
 
 const { item } = Astro.props;
+const WIDTHS = [640, 960, 1280, 1600];
+const SIZES = "(min-width: 1024px) 50vw, 100vw";
 ---
 
 <!--
@@ -20,25 +22,26 @@ const { item } = Astro.props;
     aria-label={`Before and after: ${item.vehicle}`}
   >
     <!-- After (base layer) -->
-    <Image
-      src={item.after}
+    <img
+      src={cld(item.afterId, 1280)}
+      srcset={cldSrcSet(item.afterId, WIDTHS)}
+      sizes={SIZES}
       alt={`${item.vehicle} after repair`}
       class="ba-after absolute inset-0 w-full h-full object-cover"
-      widths={[640, 960, 1280, 1600]}
-      sizes="(min-width: 1024px) 50vw, 100vw"
       loading="lazy"
+      decoding="async"
     />
-    <!-- Before (clipped layer) -->
-    <div class="ba-clip absolute inset-0 overflow-hidden" style="width: 50%;">
-      <Image
-        src={item.before}
-        alt={`${item.vehicle} before repair`}
-        class="ba-before absolute inset-0 h-full w-screen max-w-none object-cover"
-        widths={[640, 960, 1280, 1600]}
-        sizes="(min-width: 1024px) 50vw, 100vw"
-        loading="lazy"
-      />
-    </div>
+    <!-- Before (clipped via clip-path so it shares the frame's coordinate space) -->
+    <img
+      src={cld(item.beforeId, 1280)}
+      srcset={cldSrcSet(item.beforeId, WIDTHS)}
+      sizes={SIZES}
+      alt={`${item.vehicle} before repair`}
+      class="ba-before absolute inset-0 w-full h-full object-cover"
+      style="clip-path: inset(0 50% 0 0);"
+      loading="lazy"
+      decoding="async"
+    />
 
     <!-- Labels -->
     <span class="absolute top-3 left-3 bg-[var(--color-ink)]/80 backdrop-blur px-2.5 py-1 text-[10px] uppercase tracking-widest rounded">
@@ -80,16 +83,16 @@ const { item } = Astro.props;
 </figure>
 
 <script>
-  // Hook up every slider on the page. Updates the clip width + divider position.
+  // Hook up every slider on the page. Updates the clip-path + divider position.
   const figures = document.querySelectorAll<HTMLElement>(".ba");
   figures.forEach((fig) => {
     const range = fig.querySelector<HTMLInputElement>(".ba-range");
-    const clip = fig.querySelector<HTMLElement>(".ba-clip");
+    const before = fig.querySelector<HTMLElement>(".ba-before");
     const divider = fig.querySelector<HTMLElement>(".ba-divider");
-    if (!range || !clip || !divider) return;
+    if (!range || !before || !divider) return;
 
     const apply = (value: number) => {
-      clip.style.width = `${value}%`;
+      before.style.clipPath = `inset(0 ${100 - value}% 0 0)`;
       divider.style.left = `${value}%`;
     };
     range.addEventListener("input", () => apply(Number(range.value)));

@@ -8,6 +8,12 @@ node_modules/
 # Source snapshot of the old Squarespace site — kept locally for reference only
 _source/
 
+# Raw source photography (uploaded to Cloudinary, kept locally for re-runs)
+assets/
+
+# AI-image generation outputs (kept locally for reference; not committed)
+generated_imgs/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

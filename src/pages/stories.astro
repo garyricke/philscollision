@@ -2,28 +2,18 @@
 import Base from "~/layouts/Base.astro";
 import SectionHeader from "~/components/SectionHeader.astro";
 import VideoCard from "~/components/VideoCard.astro";
-import { videos } from "~/data/videos.ts";
+import { videos, themeLabels, type VideoTheme } from "~/data/videos.ts";
 import { site } from "~/data/site.ts";
 
-// Group by role for editorial structure: owner & staff first, then customers,
-// then community / neighbors.
-const groups = [
-  {
-    title: "From the shop",
-    deck: "Ed and his team, on the craft.",
-    list: videos.filter((v) => v.role === "owner" || v.role === "staff"),
-  },
-  {
-    title: "From customers",
-    deck: "Real people who came in after a bad day — and kept coming back.",
-    list: videos.filter((v) => v.role === "customer"),
-  },
-  {
-    title: "From the neighborhood",
-    deck: "Forty years of business neighbors on Lincoln Highway.",
-    list: videos.filter((v) => v.role === "neighbor"),
-  },
-];
+// Order pills by descending size so the most-populated themes lead.
+const themeKeys = Object.keys(themeLabels) as VideoTheme[];
+const themeCounts = themeKeys
+  .map((key) => ({
+    key,
+    label: themeLabels[key],
+    count: videos.filter((v) => v.themes.includes(key)).length,
+  }))
+  .sort((a, b) => b.count - a.count);
 ---
 
 <Base
@@ -31,31 +21,67 @@ const groups = [
   path="/stories/"
   description={`${videos.length} short videos from customers, staff, and neighbors of Phil's Collision Center, Schererville, IN. Captioned and transcribed.`}
 >
-  <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
+  <section class="container-page pt-16 md:pt-24 pb-8 md:pb-12">
     <SectionHeader
       eyebrow={`${videos.length} stories`}
       title="In their own words."
-      deck="Customers, staff, and neighbors — filmed in the lobby, captioned for accessibility, transcripts under every clip."
+      deck="Customers, staff, and neighbors — filmed in the lobby. Filter by theme below."
     />
   </section>
 
-  {groups.map((g) => g.list.length > 0 && (
-    <section class="container-page pb-20 md:pb-28">
-      <header class="mb-10 flex flex-col gap-2 border-t border-[var(--color-ink-edge)] pt-10">
-        <h2 class="font-display text-4xl md:text-5xl text-[var(--color-bone)]">{g.title}</h2>
-        <p class="font-editorial text-xl text-[var(--color-bone-muted)] max-w-xl leading-snug">{g.deck}</p>
-      </header>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-        {g.list.map((v) => (
+  <section class="container-page pb-20 md:pb-32">
+    <!-- Filter pills -->
+    <div
+      id="stories-filters"
+      class="flex flex-wrap gap-2 mb-10 md:mb-14 border-b border-[var(--color-ink-edge)] pb-6"
+      role="tablist"
+      aria-label="Filter stories by theme"
+    >
+      <button
+        type="button"
+        data-theme="all"
+        aria-pressed="true"
+        class="story-pill is-active inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors"
+      >
+        All
+        <span class="text-xs opacity-70 tabular-nums">{videos.length}</span>
+      </button>
+      {themeCounts.map(({ key, label, count }) => (
+        <button
+          type="button"
+          data-theme={key}
+          aria-pressed="false"
+          class="story-pill inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors"
+        >
+          {label}
+          <span class="text-xs opacity-70 tabular-nums">{count}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Card grid -->
+    <div
+      id="stories-grid"
+      class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10"
+    >
+      {videos.map((v) => (
+        <div class="story-card" data-themes={v.themes.join(" ")}>
           <VideoCard video={v} />
-        ))}
-      </div>
-    </section>
-  ))}
+        </div>
+      ))}
+    </div>
+
+    <p
+      id="stories-empty"
+      class="hidden text-center text-[var(--color-bone-muted)] py-16"
+    >
+      No stories in this theme yet.
+    </p>
+  </section>
 
   <section class="container-page py-20 md:py-32">
     <div class="rounded-2xl border border-[var(--color-spark-500)]/30 bg-[var(--color-ink-elev)] p-10 md:p-14 text-center">
-      <h2 class="font-display text-[var(--text-display-lg)] text-[var(--color-bone)] leading-[0.95] max-w-3xl mx-auto">
+      <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-[var(--color-bone)] leading-[0.95] max-w-3xl mx-auto">
         Become the next story.
       </h2>
       <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
@@ -69,3 +95,57 @@ const groups = [
     </div>
   </section>
 </Base>
+
+<style>
+  .story-pill {
+    background: var(--color-ink-elev);
+    border-color: var(--color-ink-edge);
+    color: var(--color-bone-muted);
+  }
+  .story-pill:hover {
+    color: var(--color-bone);
+    border-color: var(--color-bone-muted);
+  }
+  .story-pill.is-active {
+    background: var(--color-spark-500);
+    border-color: var(--color-spark-500);
+    color: var(--color-bone);
+  }
+  .story-pill.is-active:hover {
+    background: var(--color-spark-600);
+    border-color: var(--color-spark-600);
+  }
+  .story-card.is-hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  const pills = document.querySelectorAll<HTMLButtonElement>(".story-pill");
+  const cards = document.querySelectorAll<HTMLElement>(".story-card");
+  const empty = document.getElementById("stories-empty");
+
+  const apply = (theme: string) => {
+    let visible = 0;
+    cards.forEach((card) => {
+      const themes = (card.dataset.themes ?? "").split(" ").filter(Boolean);
+      const show = theme === "all" || themes.includes(theme);
+      card.classList.toggle("is-hidden", !show);
+      if (show) visible++;
+    });
+    empty?.classList.toggle("hidden", visible > 0);
+  };
+
+  pills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      pills.forEach((p) => {
+        p.classList.remove("is-active");
+        p.setAttribute("aria-pressed", "false");
+      });
+      pill.classList.add("is-active");
+      pill.setAttribute("aria-pressed", "true");
+      apply(pill.dataset.theme ?? "all");
+      document.dispatchEvent(new CustomEvent("videos:stop"));
+    });
+  });
+</script>
