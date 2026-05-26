@@ -104,12 +104,24 @@ const services = [
     <div class="absolute inset-x-0 top-0 h-1/3 -z-10 bg-gradient-to-b from-[var(--color-ink)]/85 to-transparent"></div>
     <div class="absolute inset-x-0 bottom-0 h-1/3 -z-10 bg-gradient-to-t from-[var(--color-ink)]/85 to-transparent"></div>
 
-    <!-- Top: headline -->
+    <!-- Top: headline (swaps with the current hero clip; .is-active fades in) -->
     <div class="container-page relative w-full pt-24 md:pt-28 text-center">
-      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[var(--color-bone)] leading-[0.9] drop-shadow-[0_2px_24px_rgba(0,0,0,0.75)] mx-auto max-w-4xl">
-        Transforming accidents into
-        <span class="text-[var(--color-spark-500)]">masterpieces.</span>
-      </h1>
+      <div class="relative mx-auto max-w-4xl h-[7em] sm:h-[7em] md:h-[7em] lg:h-[7em]">
+        <h1
+          class="hero-headline is-active absolute inset-x-0 top-0 font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[var(--color-bone)] leading-[0.9] drop-shadow-[0_2px_24px_rgba(0,0,0,0.75)] transition-opacity duration-700 ease-out"
+          data-headline-idx="0"
+        >
+          Transforming accidents into
+          <span class="text-[var(--color-spark-500)]">masterpieces.</span>
+        </h1>
+        <h1
+          class="hero-headline absolute inset-x-0 top-0 font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[var(--color-bone)] leading-[0.9] drop-shadow-[0_2px_24px_rgba(0,0,0,0.75)] transition-opacity duration-700 ease-out"
+          data-headline-idx="1"
+        >
+          Experts at restoring the
+          <span class="text-[var(--color-spark-500)]">classics.</span>
+        </h1>
+      </div>
     </div>
 
     <!-- Bottom: services + CTAs -->
@@ -786,14 +798,33 @@ const services = [
     </div>
   </section>
 
+  <style>
+    .hero-headline {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .hero-headline.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+
   <script>
     // Hero plays the list of clips in order. After each clip ends it holds on
     // the final pristine frame for 3s, then advances to the next clip (or
-    // loops back to the first).
+    // loops back to the first). The headline cross-fades to match each clip.
     const v = document.getElementById("hero-video") as HTMLVideoElement | null;
     if (v) {
       const clips: string[] = JSON.parse(v.dataset.clips ?? "[]");
       const posters: string[] = JSON.parse(v.dataset.posters ?? "[]");
+      const headlines = Array.from(
+        document.querySelectorAll<HTMLElement>(".hero-headline"),
+      );
+      const showHeadline = (i: number) => {
+        headlines.forEach((h) =>
+          h.classList.toggle("is-active", Number(h.dataset.headlineIdx) === i),
+        );
+      };
       let idx = 0;
       v.addEventListener("ended", () => {
         window.setTimeout(() => {
@@ -802,6 +833,7 @@ const services = [
           if (posters[idx]) v.poster = posters[idx];
           v.load();
           v.play().catch(() => {});
+          showHeadline(idx);
         }, 3000);
       });
     }
