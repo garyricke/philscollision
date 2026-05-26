@@ -1,0 +1,80 @@
+---
+import Internal from "~/layouts/Internal.astro";
+
+// Reverse-chronological log of work delivered, grouped by date.
+const entries = [
+  {
+    date: "2026-05-26",
+    label: "Today",
+    items: [
+      "Internal review area added (this page + the side-by-side gallery review), gated by password and reachable from the small “A” in the footer corner",
+      "Cloudinary migration completed: every hand-curated image now served via res.cloudinary.com with f_auto/q_auto and responsive srcsets",
+      "Hero repair video moved to Cloudinary after the initial Netlify deploy 404’d on it (gitignore caught the public/assets folder)",
+      "Testimonial carousel fix: removed the hover-pause that was leaving the slideshow stuck when you scrolled the cursor into the section",
+      "Testimonials section rebuilt: single quote per slide with AI-generated facility image full-bleed behind, headline overlaid and static while quotes auto-advance",
+      "13 facility photos regenerated through both Gemini and OpenAI; you can compare them in the gallery review page",
+      "FAQ accordion added to the home page (and the legacy site’s answers wired into the /faqs page)",
+      "Repo pushed to github.com/garyricke/philscollision and deployed to Netlify",
+    ],
+  },
+  {
+    date: "2026-05-25",
+    label: "Yesterday",
+    items: [
+      "Hero rebuilt as a full-bleed video: a wrecked red sports car heals into a pristine one, holds on the final frame for 3 seconds, replays",
+      "Section headline typography fixed across the site (a CSS variable token wasn’t resolving, so several headlines were rendering at body size)",
+      "Before/after slider rewritten with clip-path so the source photos show at their natural framing (the original code was slicing a thin viewport-wide blowup)",
+      "All 17 story videos pre-fetched as proper portrait thumbnails from Vimeo (the previous 16:9 crop was butchering the vertical clips)",
+      "Captions removed from the story player since they’re burned into the videos already",
+      "Stories surfaced as a Netflix-style carousel on the home page, full grid on /stories",
+      "Theme pills derived from transcript analysis: Family feel, Repeat customers, Insurance work, Classic & custom, Behind the scenes",
+      "Story videos now pause each other when a new clip starts or a filter pill is clicked",
+      "Google reviews surfaced: 9 curated 5-star testimonials with stars/quote/name",
+      "FenderBender press section gets the full magazine spread plus a custom audio player with chapter-jump markers (boundaries pulled from a Whisper transcript of the clip)",
+      "FenderBender article image and audio served via Cloudinary",
+      "New Phil’s logo wired into the nav",
+    ],
+  },
+  {
+    date: "2026-05-12",
+    label: "Kickoff",
+    items: [
+      "Initial Astro rebuild of the Squarespace site: 8 pages (home, services, before-after, stories, faqs, about, contact, 404) with shared layout, SectionHeader, VideoCard, BeforeAfter, sticky call bar, and Footer",
+      "Story video player switched from the Vimeo iframe to a native <video> facade so we control the chrome, autoplay, and accessibility",
+      "Design system primitives: Anton display type, Instrument Serif editorial italic, custom color tokens, container-page utility",
+      "LocalBusiness JSON-LD on every page, sitemap integration, OG/Twitter cards",
+    ],
+  },
+];
+---
+
+<Internal title="Status">
+  <header class="mb-12 md:mb-16 flex flex-col gap-3 max-w-2xl">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Status</p>
+    <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-[0.95]">
+      What's been built, by date.
+    </h1>
+    <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+      A running log of work delivered on the rebuild — newest first. Not the full git history; just the things the client should know about.
+    </p>
+  </header>
+
+  <ol class="flex flex-col gap-12 md:gap-16">
+    {entries.map((entry) => (
+      <li class="grid md:grid-cols-12 gap-6 md:gap-10 pb-12 md:pb-16 border-b border-[var(--color-ink-edge)] last:border-0">
+        <div class="md:col-span-3 flex flex-col gap-1">
+          <p class="font-display text-2xl md:text-3xl text-[var(--color-bone)] leading-none">{entry.label}</p>
+          <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)] tabular-nums">{entry.date}</p>
+        </div>
+        <ul class="md:col-span-9 flex flex-col gap-3">
+          {entry.items.map((item) => (
+            <li class="flex gap-3 text-[var(--color-bone)] leading-relaxed">
+              <span class="text-[var(--color-spark-500)] shrink-0 mt-2">•</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))}
+  </ol>
+</Internal>

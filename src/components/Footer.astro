@@ -79,12 +79,74 @@ const dayLabel: Record<string, string> = {
     </div>
   </div>
 
-  <div class="border-t border-[var(--color-ink-edge)]">
+  <div class="border-t border-[var(--color-ink-edge)] relative">
     <div class="container-page py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[var(--color-bone-dim)]">
       <p>© {year} {site.name}. All rights reserved.</p>
       <p>
         I-CAR certified · State Farm DRP · Lifetime workmanship warranty
       </p>
     </div>
+
+    <!-- Internal access. Subtle A-in-circle; opens a small menu. -->
+    <div class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4">
+      <button
+        type="button"
+        id="internal-toggle"
+        aria-label="Internal review menu"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls="internal-menu"
+        class="flex items-center justify-center w-8 h-8 rounded-full border border-[var(--color-bone)]/15 bg-[var(--color-ink)]/40 text-[var(--color-bone)]/40 hover:text-[var(--color-bone)] hover:border-[var(--color-bone)]/40 backdrop-blur transition-colors font-display text-sm"
+      >
+        A
+      </button>
+      <div
+        id="internal-menu"
+        role="menu"
+        hidden
+        class="absolute bottom-10 right-0 min-w-[10rem] rounded-lg border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] shadow-2xl py-1.5 text-sm"
+      >
+        <a
+          role="menuitem"
+          href="/internal/status/"
+          class="block px-4 py-2 text-[var(--color-bone-muted)] hover:bg-[var(--color-ink)] hover:text-[var(--color-bone)] transition-colors"
+        >
+          Status
+        </a>
+        <a
+          role="menuitem"
+          href="/internal/gallery-review/"
+          class="block px-4 py-2 text-[var(--color-bone-muted)] hover:bg-[var(--color-ink)] hover:text-[var(--color-bone)] transition-colors"
+        >
+          Gallery review
+        </a>
+      </div>
+    </div>
   </div>
 </footer>
+
+<script>
+  const btn = document.getElementById("internal-toggle");
+  const menu = document.getElementById("internal-menu");
+  if (btn && menu) {
+    const close = () => {
+      menu.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    };
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = !menu.hidden;
+      if (open) close();
+      else {
+        menu.hidden = false;
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (!menu.hidden && !menu.contains(e.target as Node) && e.target !== btn) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+  }
+</script>

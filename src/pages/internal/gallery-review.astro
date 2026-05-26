@@ -1,0 +1,85 @@
+---
+import Internal from "~/layouts/Internal.astro";
+
+const items = [
+  { slug: "buffing",             label: "Tech buffing a hood",         note: "Used on the testimonials carousel" },
+  { slug: "spraybooth-inside",   label: "Spray booth interior",        note: "Used on the testimonials carousel" },
+  { slug: "bay",                 label: "Wide bay with parts wall",    note: "Used on the testimonials carousel" },
+  { slug: "ac-machine",          label: "Mac Tools A/C machine",       note: "" },
+  { slug: "meridian-computer",   label: "Chief Meridian computer",     note: "" },
+  { slug: "welders",             label: "Pro Spot welder lineup",      note: "Used on the testimonials carousel" },
+  { slug: "paint-mix",           label: "PPG paint mixing room",       note: "Used on the testimonials carousel" },
+  { slug: "spraybooth-exterior", label: "Spray booth with neon sign",  note: "Used on the testimonials carousel" },
+  { slug: "storage-shelves",     label: "Supply storage shelves",      note: "" },
+  { slug: "parts-bins",          label: "Parts bin wall",              note: "" },
+  { slug: "chief-wall",          label: "Chief frame-pulling tools",   note: "Used on the testimonials carousel" },
+  { slug: "workbench",           label: "Workbench + pegboard",        note: "Used on the testimonials carousel" },
+  { slug: "reception",           label: "Reception / customer lobby",  note: "Used on the testimonials carousel" },
+];
+
+const CLOUDINARY = "https://res.cloudinary.com/dsbllwpbh/image/upload";
+const url = (slug: string, source: "original" | "gemini" | "openai", w = 1200) =>
+  `${CLOUDINARY}/f_auto,q_auto,w_${w}/phils-collision/review/${slug}-${source}`;
+---
+
+<Internal title="Gallery review">
+  <header class="mb-12 md:mb-16 flex flex-col gap-3 max-w-3xl">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Gallery review</p>
+    <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-[0.95]">
+      AI facility renders — original vs. two models.
+    </h1>
+    <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+      Each scene was regenerated through both Google's Gemini 3 Pro Image and OpenAI's gpt-image-2, using the original photo as the source. The brief: keep the equipment and layout, but make the facility look professionally photographed — clean, bright, modern. Click any image to open it full-size.
+    </p>
+  </header>
+
+  <ol class="flex flex-col gap-16 md:gap-24">
+    {items.map((item, i) => (
+      <li class="flex flex-col gap-5">
+        <header class="flex items-baseline justify-between gap-4 flex-wrap pb-3 border-b border-[var(--color-ink-edge)]">
+          <div class="flex items-baseline gap-4">
+            <span class="numeral text-xl tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+            <h2 class="font-display text-2xl md:text-3xl text-[var(--color-bone)]">{item.label}</h2>
+          </div>
+          {item.note && (
+            <span class="text-xs uppercase tracking-widest text-[var(--color-spark-500)]">{item.note}</span>
+          )}
+        </header>
+
+        <div class="grid md:grid-cols-3 gap-4 md:gap-5">
+          {(["original", "gemini", "openai"] as const).map((source) => (
+            <figure class="flex flex-col gap-2">
+              <a
+                href={url(item.slug, source, 2200)}
+                target="_blank"
+                rel="noopener"
+                class="block rounded-lg overflow-hidden border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] aspect-[3/2] group"
+              >
+                <img
+                  src={url(item.slug, source, 1200)}
+                  alt={`${item.label} — ${source}`}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                />
+              </a>
+              <figcaption class="flex items-baseline justify-between text-xs">
+                <span class="uppercase tracking-widest text-[var(--color-bone-dim)]">
+                  {source === "original" ? "Original photo" : source === "gemini" ? "Gemini 3 Pro Image" : "OpenAI gpt-image-2"}
+                </span>
+                <a
+                  href={url(item.slug, source, 2200)}
+                  target="_blank"
+                  rel="noopener"
+                  class="text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors"
+                >
+                  Open ↗
+                </a>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </li>
+    ))}
+  </ol>
+</Internal>

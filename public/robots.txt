@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /internal/
 Allow: /
 
 Sitemap: https://www.philscollisioncenter.com/sitemap-index.xml
