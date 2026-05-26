@@ -692,6 +692,9 @@ const services = [
       });
 
       // Pause when off-screen, resume when back, courteous + saves CPU.
+      // Threshold 0 + a generous rootMargin means we start playing slightly
+      // before the section is fully on-screen, so it's never caught "stuck"
+      // when the user lands on it.
       const io = new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
@@ -700,13 +703,9 @@ const services = [
             else stop();
           }
         },
-        { threshold: 0.25 },
+        { threshold: 0, rootMargin: "0px 0px -10% 0px" },
       );
       io.observe(section);
-
-      // Pause on hover for readability.
-      section.addEventListener("mouseenter", () => playing && stop());
-      section.addEventListener("mouseleave", () => playing && start());
 
       start();
     }
