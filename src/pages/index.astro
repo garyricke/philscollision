@@ -92,11 +92,13 @@ const services = [
       class="absolute inset-0 w-full h-full object-cover -z-10 brightness-110"
       src="https://res.cloudinary.com/dsbllwpbh/video/upload/q_auto/phils-collision/hero-repair.mp4"
       poster="https://res.cloudinary.com/dsbllwpbh/image/upload/f_auto,q_auto,w_1600/phils-collision/hero-repair-poster.jpg"
+      data-clips='["https://res.cloudinary.com/dsbllwpbh/video/upload/q_auto/phils-collision/hero-repair.mp4","https://res.cloudinary.com/dsbllwpbh/video/upload/q_auto/phils-collision/hero-classic-repair.mp4"]'
+      data-posters='["https://res.cloudinary.com/dsbllwpbh/image/upload/f_auto,q_auto,w_1600/phils-collision/hero-repair-poster.jpg","https://res.cloudinary.com/dsbllwpbh/image/upload/f_auto,q_auto,w_1600/phils-collision/hero-classic-repair-poster.jpg"]'
       autoplay
       muted
       playsinline
       preload="metadata"
-      aria-label="A wrecked red sports car reassembles into a flawless finish."
+      aria-label="A wrecked red sports car heals into a flawless finish, followed by a smashed 1965 Chevelle restored to showroom condition."
     ></video>
     <!-- Soft vignettes: just enough at top + bottom to hold the type, car stays bright in the middle -->
     <div class="absolute inset-x-0 top-0 h-1/3 -z-10 bg-gradient-to-b from-[var(--color-ink)]/85 to-transparent"></div>
@@ -785,11 +787,20 @@ const services = [
   </section>
 
   <script>
+    // Hero plays the list of clips in order. After each clip ends it holds on
+    // the final pristine frame for 3s, then advances to the next clip (or
+    // loops back to the first).
     const v = document.getElementById("hero-video") as HTMLVideoElement | null;
     if (v) {
+      const clips: string[] = JSON.parse(v.dataset.clips ?? "[]");
+      const posters: string[] = JSON.parse(v.dataset.posters ?? "[]");
+      let idx = 0;
       v.addEventListener("ended", () => {
         window.setTimeout(() => {
-          v.currentTime = 0;
+          idx = (idx + 1) % clips.length;
+          v.src = clips[idx];
+          if (posters[idx]) v.poster = posters[idx];
+          v.load();
           v.play().catch(() => {});
         }, 3000);
       });
