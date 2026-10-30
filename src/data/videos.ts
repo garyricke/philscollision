@@ -1,5 +1,5 @@
 /**
- * The 17 vertical customer & staff videos.
+ * Vertical customer & staff videos (Vimeo-hosted originals + Cloudinary-hosted shop-visit cuts).
  *
  * Videos are served as native `<video>` elements with the source pointing at
  * Vimeo's progressive-redirect MP4 URLs (signed but non-expiring on the Pro
@@ -21,13 +21,19 @@ export type VideoTheme =
   | "repeat"
   | "insurance"
   | "classic"
-  | "behind";
+  | "behind"
+  | "expansion";
 
 export type Video = {
   slug: string;
-  vimeoId: string;
-  /** Direct 1080p MP4 URL from Vimeo (signed, persistent on Pro accounts). */
+  /** Vimeo-hosted videos only; Cloudinary-hosted videos set `poster` instead. */
+  vimeoId?: string;
+  /** Direct 1080p MP4 URL (Vimeo progressive or Cloudinary). */
   mp4Url: string;
+  /** Poster image URL; defaults to the pre-fetched Vimeo thumbnail. */
+  poster?: string;
+  /** Draft cuts awaiting Ed's sign-off: shown only on /internal/videos/, never on public pages. */
+  draft?: boolean;
   speaker: string;
   role: VideoRole;
   /** Short headline shown on the video card (≤ 6 words). */
@@ -47,13 +53,25 @@ export const themeLabels: Record<VideoTheme, string> = {
   insurance: "Insurance work",
   classic: "Classic & custom",
   behind: "Behind the scenes",
+  expansion: "The new building",
 };
 
 // All MP4 URLs share this prefix/suffix shape; only the ID and signature differ.
 const mp4 = (id: string, sig: string) =>
   `https://player.vimeo.com/progressive_redirect/playback/${id}/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=${sig}`;
 
-export const videos: Video[] = [
+// Shop-visit cuts (23 Oct 2026) live on Cloudinary under phils-collision/social/.
+// Captions are burned in; the poster is the frame at 1.2 s (speaker + hook title).
+const CLD_VIDEO = "https://res.cloudinary.com/dsbllwpbh/video/upload";
+// Bump after re-uploading the cuts so browsers and the CDN fetch the new renders.
+const CLD_REV = 2;
+const cldVideo = (slug: string) => ({
+  draft: true,
+  mp4Url: `${CLD_VIDEO}/q_auto/phils-collision/social/${slug}.mp4?v=${CLD_REV}`,
+  poster: `${CLD_VIDEO}/so_1.2,f_auto,q_auto,w_720/phils-collision/social/${slug}.jpg?v=${CLD_REV}`,
+});
+
+const allVideos: Video[] = [
   {
     slug: "eds-story",
     vimeoId: "1133508853",
@@ -241,7 +259,184 @@ export const videos: Video[] = [
     features: ["stories"],
     themes: ["family"],
   },
+
+  // ---- Shop visit, 23 Oct 2026: Ed on the expansion, the paint shop, the front office ----
+  {
+    slug: "ed-the-expansion",
+    ...cldVideo("ed-the-expansion"),
+    speaker: "Ed Kalinowski",
+    role: "owner",
+    title: "6,500 sq ft of new shop",
+    pullQuote: "My team has grown this shop. I can double my volume.",
+    features: ["stories"],
+    themes: ["expansion", "behind"],
+  },
+  {
+    slug: "ed-inside-the-new-building",
+    ...cldVideo("ed-inside-the-new-building"),
+    speaker: "Ed Kalinowski",
+    role: "owner",
+    title: "Inside the new building",
+    pullQuote: "I have 188 LED light bulbs coming in this place. It's going to be so bright.",
+    features: ["stories"],
+    themes: ["expansion"],
+  },
+  {
+    slug: "ed-47-years",
+    ...cldVideo("ed-47-years"),
+    speaker: "Ed Kalinowski",
+    role: "owner",
+    title: "Going out with a bang",
+    pullQuote: "47 years in the industry, I want to go out of it with a bang.",
+    features: ["stories"],
+    themes: ["expansion", "family"],
+  },
+  {
+    slug: "ed-why-phils-is-different",
+    ...cldVideo("ed-why-phils-is-different"),
+    speaker: "Ed Kalinowski",
+    role: "owner",
+    title: "Why Phil's is different",
+    pullQuote: "Their quality can't come nowhere near what we can do.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "ed-best-body-shop",
+    ...cldVideo("ed-best-body-shop"),
+    speaker: "Ed Kalinowski",
+    role: "owner",
+    title: "Best body shop in Schererville",
+    pullQuote: "You've seen my team. You see what we put out. Everybody else sees it.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "ross-train-bumpers",
+    ...cldVideo("ross-train-bumpers"),
+    speaker: "Ross",
+    role: "staff",
+    title: "Cars, bikes… train bumpers",
+    pullQuote: "We paint motorcycles. We paint Amtrak train bumpers.",
+    features: ["stories"],
+    themes: ["behind", "classic"],
+  },
+  {
+    slug: "ross-dont-ever-give-up",
+    ...cldVideo("ross-dont-ever-give-up"),
+    speaker: "Ross",
+    role: "staff",
+    title: "25 years on the spray gun",
+    pullQuote: "For new people, the most important thing is don't ever give up.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "ross-no-corporate-rhetoric",
+    ...cldVideo("ross-no-corporate-rhetoric"),
+    speaker: "Ross",
+    role: "staff",
+    title: "No corporate rhetoric",
+    pullQuote: "Everyone takes care of everybody else here.",
+    features: ["stories"],
+    themes: ["behind", "family"],
+  },
+  {
+    slug: "ross-two-booths",
+    ...cldVideo("ross-two-booths"),
+    speaker: "Ross",
+    role: "staff",
+    title: "Two booths, more cars",
+    pullQuote: "With two booths you can really operate more.",
+    features: ["stories"],
+    themes: ["expansion", "behind"],
+  },
+  {
+    slug: "ross-prep-is-everything",
+    ...cldVideo("ross-prep-is-everything"),
+    speaker: "Ross",
+    role: "staff",
+    title: "Paint that won't peel",
+    pullQuote: "I want the maximum durability on that car.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "ross-burn-a-hole",
+    ...cldVideo("ross-burn-a-hole"),
+    speaker: "Ross",
+    role: "staff",
+    title: "How a master painter trains",
+    pullQuote: "Burn a hole into the paint. Now you know.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "ross-safe-place-or-panic-room",
+    ...cldVideo("ross-safe-place-or-panic-room"),
+    speaker: "Ross",
+    role: "staff",
+    title: "Safe place or panic room",
+    pullQuote: "It's either my safe place or the panic room.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "ross-learn-by-mistakes",
+    ...cldVideo("ross-learn-by-mistakes"),
+    speaker: "Ross",
+    role: "staff",
+    title: "Learn by your mistakes",
+    pullQuote: "It takes a lot to stay with it.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "tony-equipped-better",
+    ...cldVideo("tony-equipped-better"),
+    speaker: "Tony Alvarez",
+    role: "staff",
+    title: "Equipped better than 90%",
+    pullQuote: "We're equipped better than 90% of the shops that I've even visited.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "tony-the-atmosphere",
+    ...cldVideo("tony-the-atmosphere"),
+    speaker: "Tony Alvarez",
+    role: "staff",
+    title: "What it's like to work for Ed",
+    pullQuote: "He just focuses on quality and customer service. That's it.",
+    features: ["stories"],
+    themes: ["behind", "family"],
+  },
+  {
+    slug: "tony-why-phils",
+    ...cldVideo("tony-why-phils"),
+    speaker: "Tony Alvarez",
+    role: "staff",
+    title: "He's seen the best shops",
+    pullQuote: "The energy was right and the timing was right.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
+  {
+    slug: "tony-i-can-do-it-all",
+    ...cldVideo("tony-i-can-do-it-all"),
+    speaker: "Tony Alvarez",
+    role: "staff",
+    title: "\"I can do it all\"",
+    pullQuote: "He's got a really solid team, a great painter, great set of guys.",
+    features: ["stories"],
+    themes: ["behind"],
+  },
 ];
+
+/** Published videos: everything public-facing reads from this. */
+export const videos = allVideos.filter((v) => !v.draft);
+/** Draft cuts for the internal review page. */
+export const draftVideos = allVideos.filter((v) => v.draft);
 
 export const heroVideos = videos.filter((v) => v.features.includes("hero"));
 export const storyVideos = videos.filter((v) => v.features.includes("stories"));

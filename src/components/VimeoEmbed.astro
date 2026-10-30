@@ -2,7 +2,9 @@
 import { vimeoThumbnailUrl } from "~/data/videos.ts";
 
 export interface Props {
-  vimeoId: string;
+  vimeoId?: string;
+  /** Poster URL; overrides the Vimeo thumbnail (used for Cloudinary videos). */
+  poster?: string;
   /** Direct 1080p MP4 URL from Vimeo. */
   mp4Url: string;
   /** Used as the iframe/video accessible name. */
@@ -17,6 +19,7 @@ export interface Props {
 
 const {
   vimeoId,
+  poster,
   mp4Url,
   title,
   aspect = "9/16",
@@ -24,7 +27,7 @@ const {
   showOverlay = true,
 } = Astro.props;
 
-const thumb = vimeoThumbnailUrl(vimeoId);
+const thumb = poster ?? vimeoThumbnailUrl(vimeoId ?? "");
 ---
 
 <!--

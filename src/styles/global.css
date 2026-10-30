@@ -14,12 +14,15 @@
   --color-bone-muted: #b8b3a8;
   --color-bone-dim: #6d6a63;
 
-  /* Accent — a warm industrial red, not panic red */
-  --color-spark-50: #fef2f0;
-  --color-spark-400: #ef5a3c;
-  --color-spark-500: #e5341c;
-  --color-spark-600: #c92410;
-  --color-spark-700: #a31d0d;
+  /* Accent — Phil's Red, sampled from the logo (logo-phils-e.svg gradient).
+     500 is the brand red: fills, buttons, borders, bars. White text on it = 5.95:1.
+     400 is the only red for TEXT on dark surfaces (4.8:1+ on ink/ink-elev).
+     See /internal/style-guide/ before adding any new red. */
+  --color-spark-50: #fdeceb;
+  --color-spark-400: #ff2b2e;
+  --color-spark-500: #c90a0c;
+  --color-spark-600: #a8080a;
+  --color-spark-700: #8f0002;
 
   /* Paint-metallic accent (rare use) */
   --color-chrome: #d6cfc4;
@@ -129,7 +132,7 @@ body {
 @utility numeral {
   font-family: var(--font-display);
   font-size: 0.85em;
-  color: var(--color-spark-500);
+  color: var(--color-spark-400);
   font-feature-settings: "tnum";
 }
 

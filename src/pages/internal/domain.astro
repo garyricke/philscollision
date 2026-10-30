@@ -1,0 +1,400 @@
+---
+import Internal from "~/layouts/Internal.astro";
+
+// Single source of truth for the launch. Update these if Netlify reassigns the
+// site name or the load-balancer IP changes, and the whole page stays correct.
+const launch = {
+  domain: "philscollisioncenter.com",
+  netlifySite: "philscollision.netlify.app",
+  registrar: "Squarespace Domains II LLC (migrated from Google Domains)",
+  registrarLogin: "account.squarespace.com/domains",
+  // Who's doing what on the client side.
+  owner: "Ed Kalinowski",
+  contact: "Eddie", // Ed's son — the one making the DNS change
+  nameservers: [
+    "ns-cloud-a1.googledomains.com",
+    "ns-cloud-a2.googledomains.com",
+    "ns-cloud-a3.googledomains.com",
+    "ns-cloud-a4.googledomains.com",
+  ],
+  records: [
+    { type: "A", host: "@", value: "104.198.14.52", note: "Netlify global load-balancer IP" },
+    { type: "CNAME", host: "www", value: "philscollision.netlify.app", note: "Netlify site for www" },
+  ],
+};
+
+const emailSubject = "Action needed: final step to launch the new Phil's Collision Center website";
+
+// Best-practice HTML email: 600px centered table layout, all styles inline,
+// web-safe fonts. Rendered as the on-screen preview AND copied to the clipboard
+// as rich text, so it pastes into Gmail/Outlook with formatting intact.
+const emailHtml = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f2;margin:0;padding:0;width:100%;">
+  <tr>
+    <td align="center" style="padding:24px 12px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background-color:#ffffff;border-radius:12px;border:1px solid #e6e6e3;overflow:hidden;">
+        <tr>
+          <td style="background-color:#e5341c;padding:22px 32px;">
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;color:#ffffff;letter-spacing:0.3px;">Phil's Collision Center &mdash; New Website Launch</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#2a2a2a;">
+            <p style="margin:0 0 16px;">Hi ${launch.contact},</p>
+            <p style="margin:0 0 16px;">The new Phil's Collision Center website is built and ready to go live. The last step is on your end: pointing <strong>philscollisioncenter.com</strong> away from the old Squarespace site and over to our new, faster platform.</p>
+            <p style="margin:0 0 24px;">The domain is registered through Squarespace Domains (it came over from Google Domains), so that's where this quick, roughly 5-minute change happens.</p>
+
+            <p style="margin:0 0 8px;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#e5341c;">Step 1 &mdash; Log in</p>
+            <ul style="margin:0 0 24px;padding-left:20px;">
+              <li style="margin:0 0 6px;">Go to <a href="https://account.squarespace.com/domains" style="color:#c92410;">account.squarespace.com/domains</a></li>
+              <li style="margin:0 0 6px;">Click <strong>"Continue with Google"</strong> and use the original Google account that manages the domain.</li>
+              <li style="margin:0;">Click <strong>philscollisioncenter.com</strong> to open its settings.</li>
+            </ul>
+
+            <p style="margin:0 0 8px;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#e5341c;">Step 2 &mdash; Update the DNS records</p>
+            <p style="margin:0 0 12px;">In the left menu, click <strong>"DNS"</strong>, then scroll down to the <strong>"Custom Records"</strong> section. You'll see several records left over from the old site. Here's exactly what to change:</p>
+            <ol style="margin:0 0 16px;padding-left:20px;">
+              <li style="margin:0 0 10px;"><strong>Delete the old A records.</strong> There are usually four A records with Host <code style="background-color:#f1f1ee;padding:1px 5px;border-radius:3px;font-family:'Courier New',monospace;">@</code> pointing to Squarespace (their values start with <strong>198.185.159</strong> or <strong>198.49.23</strong>). Remove all of them.</li>
+              <li style="margin:0;"><strong>Add one new A record</strong>, and <strong>update the existing "www" CNAME</strong>, to match the table below.</li>
+            </ol>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 8px;border:1px solid #e6e6e3;border-radius:8px;overflow:hidden;">
+              <tr style="background-color:#1a1a1a;">
+                <th align="left" style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:#ffffff;">Type</th>
+                <th align="left" style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:#ffffff;">Host</th>
+                <th align="left" style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:#ffffff;">Value (points to)</th>
+              </tr>
+              <tr style="background-color:#ffffff;">
+                <td style="padding:12px;border-top:1px solid #e6e6e3;font-family:'Courier New',monospace;font-weight:bold;">A</td>
+                <td style="padding:12px;border-top:1px solid #e6e6e3;font-family:'Courier New',monospace;">@</td>
+                <td style="padding:12px;border-top:1px solid #e6e6e3;font-family:'Courier New',monospace;color:#c92410;font-weight:bold;">104.198.14.52</td>
+              </tr>
+              <tr style="background-color:#fafafa;">
+                <td style="padding:12px;border-top:1px solid #e6e6e3;font-family:'Courier New',monospace;font-weight:bold;">CNAME</td>
+                <td style="padding:12px;border-top:1px solid #e6e6e3;font-family:'Courier New',monospace;">www</td>
+                <td style="padding:12px;border-top:1px solid #e6e6e3;font-family:'Courier New',monospace;color:#c92410;font-weight:bold;">${launch.netlifySite}</td>
+              </tr>
+            </table>
+            <p style="margin:0 0 24px;font-size:14px;color:#666666;">If editing the "www" CNAME is awkward, just delete it and add a fresh one with the value above.</p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+              <tr>
+                <td style="background-color:#fff7ed;border:1px solid #fed7aa;border-left:4px solid #e5341c;border-radius:6px;padding:14px 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#7a3a12;">
+                  <strong>Please leave everything else alone</strong> &mdash; especially any <strong>MX</strong> or <strong>TXT</strong> records. Those run the email, and we don't want to touch them. When the two records above are set, click <strong>Save</strong>.
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 8px;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#e5341c;">What happens next</p>
+            <p style="margin:0 0 16px;">After you save, the change spreads across the internet &mdash; usually within a couple of hours, occasionally up to 24&ndash;48 hours. Once it reaches us, the secure HTTPS padlock is generated automatically. Please shoot me a quick text or email once you've saved, so I can watch the launch on my end.</p>
+
+            <p style="margin:0 0 24px;font-size:14px;color:#666666;"><strong>One important note:</strong> please don't cancel the Squarespace account or turn off domain auto-renew. We're only moving the <em>website</em> &mdash; you still own and renew the domain name through Squarespace. We'll cancel just the old website subscription once the new site is confirmed live.</p>
+
+            <p style="margin:0 0 4px;">Thanks, ${launch.contact} &mdash; appreciate it.</p>
+            <p style="margin:0;">Gary<br><span style="color:#888888;">Orbis Design</span></p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>`;
+
+// Plain-text fallback used when the clipboard can't take rich HTML.
+const emailPlain = `Subject: ${emailSubject}
+
+Hi ${launch.contact},
+
+The new Phil's Collision Center website is built and ready to go live. The last step is on your end: pointing philscollisioncenter.com away from the old Squarespace site and over to our new, faster platform.
+
+The domain is registered through Squarespace Domains (it came over from Google Domains), so that's where this quick, ~5-minute change happens.
+
+STEP 1 — Log in
+- Go to ${launch.registrarLogin}
+- Click "Continue with Google" and use the original Google account that manages the domain.
+- Click philscollisioncenter.com to open its settings.
+
+STEP 2 — Update the DNS records
+In the left menu, click "DNS", then scroll to the "Custom Records" section. You'll see several records from the old site. Here's what to change:
+
+1) DELETE the old A records. There are usually four A records with Host "@" pointing to Squarespace (values start with 198.185.159 or 198.49.23). Remove all of them.
+2) ADD one new A record, and UPDATE the existing "www" CNAME, to these values:
+
+   Type   Host   Value
+   A      @      104.198.14.52
+   CNAME  www    ${launch.netlifySite}
+
+(If editing the www CNAME is awkward, delete it and add a fresh one.)
+
+PLEASE LEAVE EVERYTHING ELSE ALONE — especially any MX or TXT records. Those run the email. When the two records above are set, click Save.
+
+WHAT HAPPENS NEXT
+After you save, the change spreads across the internet — usually within a couple of hours, occasionally up to 24–48 hours. Once it reaches us, the secure HTTPS padlock is generated automatically. Please text or email me once you've saved so I can watch the launch on my end.
+
+One important note: please don't cancel the Squarespace account or turn off domain auto-renew. We're only moving the website — you still own and renew the domain name through Squarespace. We'll cancel just the old website subscription once the new site is confirmed live.
+
+Thanks, ${launch.contact} — appreciate it.
+Gary
+Orbis Design`;
+---
+
+<Internal title="Domain & launch">
+  <!-- White "document" sheet sitting on the dark internal chrome, for readability. -->
+  <article class="bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 p-6 md:p-12">
+    <header class="mb-10 md:mb-14 flex flex-col gap-3 max-w-2xl">
+      <p class="text-xs uppercase tracking-[0.3em] text-[#e5341c] font-semibold">Going live</p>
+      <h1 class="font-display text-4xl md:text-5xl text-slate-900 leading-[0.95]">
+        Point the domain to Netlify.
+      </h1>
+      <p class="font-editorial text-xl text-slate-500 leading-snug">
+        Everything needed to switch <span class="text-slate-900">{launch.domain}</span> from the old Squarespace site to the new Netlify build — plus a ready-to-send email for {launch.contact} and notes for future changes.
+      </p>
+    </header>
+
+    <!-- Who's who -->
+    <section class="mb-12 rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+      <div class="flex flex-col gap-0.5">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Client owner</p>
+        <p class="text-slate-900 font-medium">{launch.owner}</p>
+      </div>
+      <div class="hidden sm:block w-px h-10 bg-slate-200"></div>
+      <div class="flex flex-col gap-0.5">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Making the DNS change</p>
+        <p class="text-slate-900 font-medium">Eddie <span class="text-slate-400 font-normal">(Ed's son — send the email below to him)</span></p>
+      </div>
+    </section>
+
+    <!-- Where things stand -->
+    <section class="mb-14 grid md:grid-cols-3 gap-4">
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col gap-1">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Domain registrar</p>
+        <p class="text-slate-900 leading-snug">Squarespace Domains</p>
+        <p class="text-sm text-slate-500 leading-snug">Migrated from Google Domains · nameservers still on Google Cloud</p>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col gap-1">
+        <p class="text-xs uppercase tracking-widest text-slate-400">New host</p>
+        <p class="text-slate-900 leading-snug">Netlify</p>
+        <p class="text-sm text-slate-500 leading-snug">{launch.netlifySite}</p>
+      </div>
+      <div class="rounded-xl border border-[#e5341c]/30 bg-[#fef2f0] p-5 flex flex-col gap-1">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Current state</p>
+        <p class="text-[#c92410] leading-snug font-medium">Pending DNS verification</p>
+        <p class="text-sm text-slate-500 leading-snug">Custom domain added in Netlify; waiting on the DNS change below.</p>
+      </div>
+    </section>
+
+    <!-- The DNS records — the actual change -->
+    <section class="mb-16">
+      <div class="flex items-baseline justify-between gap-4 mb-5 pb-3 border-b border-slate-200">
+        <h2 class="font-display text-2xl md:text-3xl text-slate-900">The change, in one table</h2>
+        <span class="text-xs uppercase tracking-widest text-slate-400 hidden sm:block">Squarespace → DNS → Custom Records</span>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-slate-200">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="text-xs uppercase tracking-widest text-white bg-slate-900">
+              <th class="px-4 py-3 font-medium">Type</th>
+              <th class="px-4 py-3 font-medium">Host</th>
+              <th class="px-4 py-3 font-medium">Value</th>
+              <th class="px-4 py-3 font-medium hidden sm:table-cell">What it is</th>
+            </tr>
+          </thead>
+          <tbody class="text-slate-800">
+            {launch.records.map((r) => (
+              <tr class="border-t border-slate-200 odd:bg-white even:bg-slate-50">
+                <td class="px-4 py-3 font-mono font-bold">{r.type}</td>
+                <td class="px-4 py-3 font-mono text-sm">{r.host}</td>
+                <td class="px-4 py-3 font-mono text-sm text-[#c92410] font-semibold select-all">{r.value}</td>
+                <td class="px-4 py-3 text-sm text-slate-500 hidden sm:table-cell">{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 grid sm:grid-cols-2 gap-4">
+        <div class="rounded-lg border border-[#e5341c]/30 bg-[#fef2f0] p-4 flex flex-col gap-2">
+          <p class="text-xs uppercase tracking-widest text-[#c92410] font-semibold">Delete first — old Squarespace records</p>
+          <ul class="text-sm text-slate-600 leading-snug flex flex-col gap-1.5">
+            <li class="flex gap-2"><span class="text-[#e5341c] shrink-0 font-bold">✕</span><span>The ~4 <span class="font-mono text-slate-900">A</span> records on <span class="font-mono text-slate-900">@</span> pointing to <span class="font-mono text-slate-900">198.185.159.x</span> / <span class="font-mono text-slate-900">198.49.23.x</span></span></li>
+            <li class="flex gap-2"><span class="text-[#e5341c] shrink-0 font-bold">✕</span><span>The <span class="font-mono text-slate-900">www</span> CNAME pointing to <span class="font-mono text-slate-900">ext-cust.squarespace.com</span> (replace its value, or delete + re-add)</span></li>
+          </ul>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 flex flex-col gap-2">
+          <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Leave alone — don't break email</p>
+          <ul class="text-sm text-slate-600 leading-snug flex flex-col gap-1.5">
+            <li class="flex gap-2"><span class="text-slate-400 shrink-0">→</span><span>All <span class="font-mono text-slate-900">MX</span> records (email delivery)</span></li>
+            <li class="flex gap-2"><span class="text-slate-400 shrink-0">→</span><span>All <span class="font-mono text-slate-900">TXT</span> records (SPF / DKIM / verification)</span></li>
+            <li class="flex gap-2"><span class="text-slate-400 shrink-0">→</span><span>Any record that isn't a Squarespace <span class="font-mono text-slate-900">@</span> A record or the <span class="font-mono text-slate-900">www</span> CNAME</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-sm text-slate-500 mt-3 leading-relaxed">
+        Keep the Squarespace nameservers as-is for this route — the records do the work. The goal: exactly one <span class="font-mono text-slate-900">@</span> A record and one <span class="font-mono text-slate-900">www</span> CNAME left, both pointing at Netlify.
+      </p>
+    </section>
+
+    <!-- Copy-paste EMAIL for Eddie -->
+    <section class="mb-16">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-3 border-b border-slate-200">
+        <h2 class="font-display text-2xl md:text-3xl text-slate-900">Email to send Eddie</h2>
+        <button
+          type="button"
+          id="copy-email"
+          class="inline-flex items-center gap-2 shrink-0 bg-[#e5341c] hover:bg-[#c92410] text-white text-sm px-4 py-2 rounded-full font-medium transition-colors"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span id="copy-email-label">Copy formatted email</span>
+        </button>
+      </div>
+
+      <!-- Subject line, with its own copy button -->
+      <div class="flex flex-wrap items-center gap-3 mb-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+        <span class="text-xs uppercase tracking-widest text-slate-400 shrink-0">Subject</span>
+        <span id="email-subject" class="text-slate-800 text-sm flex-1 min-w-[12rem]">{emailSubject}</span>
+        <button
+          type="button"
+          id="copy-subject"
+          class="text-xs uppercase tracking-widest text-[#c92410] hover:text-[#e5341c] font-semibold shrink-0"
+        >
+          <span id="copy-subject-label">Copy</span>
+        </button>
+      </div>
+
+      <p class="text-sm text-slate-500 mb-4 leading-relaxed">
+        "Copy formatted email" puts the styled version on your clipboard — paste straight into a Gmail/Outlook compose window and the formatting comes with it. Preview:
+      </p>
+
+      <!-- Live preview = the exact HTML that gets copied. -->
+      <div class="rounded-xl border border-slate-200 overflow-hidden max-h-[640px] overflow-y-auto">
+        <div id="email-preview" set:html={emailHtml}></div>
+      </div>
+      <pre id="email-plain" class="sr-only">{emailPlain}</pre>
+    </section>
+
+    <!-- Two routes, for the developer -->
+    <section class="mb-16">
+      <h2 class="font-display text-2xl md:text-3xl text-slate-900 mb-5 pb-3 border-b border-slate-200">Two ways to route it (dev reference)</h2>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col gap-3">
+          <span class="text-xs uppercase tracking-widest text-[#c92410] font-semibold">Option A · simplest for the client</span>
+          <h3 class="font-display text-xl text-slate-900">Manual DNS records</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Keep DNS on Squarespace; change only the A and CNAME records above. This is what the email to Eddie uses — exact values, nothing to look up. Best when there's email routing (Google Workspace) we don't want to disturb.
+          </p>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Netlify provisions the SSL certificate automatically once it sees the records resolve.
+          </p>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col gap-3">
+          <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Option B · cleanest long-term</span>
+          <h3 class="font-display text-xl text-slate-900">Netlify nameservers</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Hand DNS to Netlify: in Squarespace, set custom nameservers to the 4 Netlify gives us (look like <span class="font-mono text-slate-900">dns1.p01.netlifydns.com</span>). Netlify then manages records + SSL.
+          </p>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Grab the exact 4 from Netlify → Domains → this domain → "Set up Netlify DNS" before sending. Note: moving nameservers also moves any email/MX records, so re-create those in Netlify first.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Don't-break-it rules -->
+    <section class="mb-16">
+      <h2 class="font-display text-2xl md:text-3xl text-slate-900 mb-5 pb-3 border-b border-slate-200">Don't break it</h2>
+      <ul class="flex flex-col gap-4">
+        <li class="flex gap-3 text-slate-700 leading-relaxed">
+          <span class="text-[#e5341c] shrink-0 mt-1.5 font-bold">•</span>
+          <span><span class="text-slate-900 font-semibold">Keep the domain registration.</span> Hosting and domain are separate Squarespace services. We're leaving Squarespace <em>hosting</em>, not the domain. Phil's keeps paying the annual domain fee and keeps owning the name.</span>
+        </li>
+        <li class="flex gap-3 text-slate-700 leading-relaxed">
+          <span class="text-[#e5341c] shrink-0 mt-1.5 font-bold">•</span>
+          <span><span class="text-slate-900 font-semibold">Don't close the Squarespace account.</span> After the site moves, the account drops to a simple Domains dashboard — that's where DNS lives. Closing it would surrender the domain.</span>
+        </li>
+        <li class="flex gap-3 text-slate-700 leading-relaxed">
+          <span class="text-[#e5341c] shrink-0 mt-1.5 font-bold">•</span>
+          <span><span class="text-slate-900 font-semibold">Cancel hosting only after launch.</span> Order: (1) update DNS, (2) confirm the Netlify site is live and serving 100% of traffic, (3) cancel just the Squarespace <em>website/store</em> subscription, (4) leave domain auto-renew ON.</span>
+        </li>
+        <li class="flex gap-3 text-slate-700 leading-relaxed">
+          <span class="text-[#e5341c] shrink-0 mt-1.5 font-bold">•</span>
+          <span><span class="text-slate-900 font-semibold">Transferring the domain is optional and later.</span> If the shop wants to stop paying Squarespace for the name, transfer to Porkbun/Cloudflare/Namecheap — but not within 60 days of a registrar change/renewal (ICANN lock). Do this months after launch, never during it.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Verify -->
+    <section>
+      <h2 class="font-display text-2xl md:text-3xl text-slate-900 mb-5 pb-3 border-b border-slate-200">Verify the switch</h2>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="rounded-xl border border-slate-200 bg-slate-900 p-5 flex flex-col gap-2">
+          <p class="text-xs uppercase tracking-widest text-slate-400">Check DNS has propagated</p>
+          <code class="font-mono text-sm text-emerald-400 select-all">dig +short philscollisioncenter.com</code>
+          <p class="text-sm text-slate-400 leading-snug">Should return <span class="font-mono text-slate-200">104.198.14.52</span>.</p>
+          <code class="font-mono text-sm text-emerald-400 select-all mt-1">dig +short www.philscollisioncenter.com</code>
+          <p class="text-sm text-slate-400 leading-snug">Should point at <span class="font-mono text-slate-200">{launch.netlifySite}</span>.</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 flex flex-col gap-2">
+          <p class="text-xs uppercase tracking-widest text-slate-400">Then, in Netlify</p>
+          <ul class="flex flex-col gap-2 text-sm text-slate-600 leading-snug">
+            <li class="flex gap-2"><span class="text-[#e5341c] shrink-0">•</span><span>"Pending DNS verification" flips to verified once the records resolve.</span></li>
+            <li class="flex gap-2"><span class="text-[#e5341c] shrink-0">•</span><span>SSL provisions automatically (Domains → HTTPS). Click "Verify / Renew" if it stalls after DNS is confirmed.</span></li>
+            <li class="flex gap-2"><span class="text-[#e5341c] shrink-0">•</span><span>Load <span class="font-mono text-slate-900">https://{launch.domain}</span> in a fresh/incognito window to dodge cached DNS.</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-sm text-slate-500 mt-4 leading-relaxed">
+        Propagation is usually minutes to a couple of hours, occasionally up to 24–48 hours for cached records to clear.
+      </p>
+    </section>
+  </article>
+
+  <script>
+    // Brief "Copied!" feedback on a button label.
+    const flash = (el: HTMLElement | null, msg: string) => {
+      if (!el) return;
+      const prev = el.textContent;
+      el.textContent = msg;
+      setTimeout(() => { el.textContent = prev; }, 1900);
+    };
+
+    // Copy the email as rich text (text/html) with a plain-text fallback, so it
+    // pastes into Gmail/Outlook with formatting intact.
+    const emailBtn = document.getElementById("copy-email");
+    const emailLabel = document.getElementById("copy-email-label");
+    const emailPreview = document.getElementById("email-preview");
+    const emailPlainEl = document.getElementById("email-plain");
+
+    emailBtn?.addEventListener("click", async () => {
+      const html = emailPreview?.innerHTML ?? "";
+      const plain = emailPlainEl?.textContent ?? "";
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([plain], { type: "text/plain" }),
+          }),
+        ]);
+        flash(emailLabel, "Copied! Paste into Gmail");
+      } catch {
+        try {
+          await navigator.clipboard.writeText(plain);
+          flash(emailLabel, "Copied as plain text");
+        } catch {
+          flash(emailLabel, "Copy failed — select manually");
+        }
+      }
+    });
+
+    // Subject line copy.
+    const subjBtn = document.getElementById("copy-subject");
+    const subjLabel = document.getElementById("copy-subject-label");
+    const subjEl = document.getElementById("email-subject");
+    subjBtn?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(subjEl?.textContent ?? "");
+        flash(subjLabel, "Copied!");
+      } catch {
+        flash(subjLabel, "Failed");
+      }
+    });
+  </script>
+</Internal>

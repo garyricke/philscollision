@@ -22,6 +22,12 @@
   to = "/contact/"
   status = 301
 
+# Short link for Ed's video review (shared by email; keep it working)
+[[redirects]]
+  from = "/review"
+  to = "/internal/videos/"
+  status = 302
+
 # Security headers
 [[headers]]
   for = "/*"

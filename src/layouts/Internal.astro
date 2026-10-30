@@ -22,7 +22,7 @@ const { title } = Astro.props;
     <div id="gate" class="fixed inset-0 z-50 bg-[var(--color-ink)] flex items-center justify-center p-6">
       <form id="gate-form" class="w-full max-w-sm flex flex-col gap-5 text-center">
         <div class="flex flex-col gap-2 mb-2">
-          <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-500)] font-medium">Internal</p>
+          <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Internal</p>
           <h1 class="font-display text-3xl text-[var(--color-bone)]">Phil's review area</h1>
         </div>
         <label class="flex flex-col gap-2 text-left">
@@ -55,6 +55,9 @@ const { title } = Astro.props;
           <span class="text-[var(--color-ink-edge)]">/</span>
           <a href="/internal/status/" class="text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors">Status</a>
           <a href="/internal/gallery-review/" class="text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors">Gallery review</a>
+          <a href="/internal/domain/" class="text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors">Domain &amp; launch</a>
+          <a href="/internal/videos/" class="text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors">Video review</a>
+          <a href="/internal/style-guide/" class="text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] transition-colors">Style guide</a>
         </div>
         <button
           type="button"

@@ -1,0 +1,46 @@
+---
+import Internal from "~/layouts/Internal.astro";
+import VimeoEmbed from "~/components/VimeoEmbed.astro";
+import { draftVideos } from "~/data/videos.ts";
+import { schedule, weekOf } from "~/data/socialSchedule.ts";
+
+const weeks = schedule.map((s, i) => ({
+  ...s,
+  week: i + 1,
+  video: draftVideos.find((v) => v.slug === s.slug)!,
+}));
+---
+
+<Internal title="Video review">
+  <header class="mb-12 md:mb-16 flex flex-col gap-3 max-w-2xl">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Rough draft · first pass</p>
+    <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-[0.95]">
+      17 videos. 17 weeks.
+    </h1>
+    <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+      Cut from the interviews on October 23rd: one video a week, every week through February. Gary is doing his own detailed review too, so watch for the big things: anything you'd say differently, anything you don't want public, or a video you'd rather skip.
+    </p>
+    <p class="text-sm text-[var(--color-bone-dim)]">
+      To give notes, reply to Gary's email with the week number and what to change. Nothing here is public yet.
+    </p>
+  </header>
+
+  <ol class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+    {weeks.map(({ week, caption, video }) => (
+      <li class="flex flex-col gap-4" id={`week-${week}`}>
+        <p class="flex items-baseline justify-between gap-3">
+          <span class="font-display text-2xl uppercase text-[var(--color-bone)]">Week {week}</span>
+          <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Week of {weekOf(week)}</span>
+        </p>
+        <VimeoEmbed mp4Url={video.mp4Url} poster={video.poster} title={`${video.speaker} — ${video.title}`} />
+        <div class="flex flex-col gap-1">
+          <p class="font-display text-xl uppercase leading-tight">{video.title}</p>
+          <p class="text-xs uppercase tracking-widest text-[var(--color-spark-400)]">{video.speaker}</p>
+        </div>
+        <p class="text-sm text-[var(--color-bone-muted)] leading-relaxed border-l-2 border-[var(--color-spark-500)] pl-3">
+          {caption}
+        </p>
+      </li>
+    ))}
+  </ol>
+</Internal>

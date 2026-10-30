@@ -1,0 +1,196 @@
+---
+import Internal from "~/layouts/Internal.astro";
+import { cld, cldSrcSet } from "~/data/cloudinary.ts";
+import { site } from "~/data/site.ts";
+
+// Reds are sampled from the logo itself (assets/logo-phils-e.svg gradient stops).
+const reds = [
+  { name: "Phil's Red", hex: "#C90A0C", token: "--color-spark-500", use: "The brand red. Buttons, fills, borders, rules, video title boxes, ring around the mascot.", contrast: "White text on it 5.95:1" },
+  { name: "Phil's Red Bright", hex: "#FF2B2E", token: "--color-spark-400", use: "The only red for text on dark backgrounds: eyebrows, links, numerals, the highlighted caption word.", contrast: "4.84:1 on ink-elev, 5.28:1 on ink" },
+  { name: "Red Deep", hex: "#A8080A", token: "--color-spark-600", use: "Hover and pressed states for red fills.", contrast: "White text on it 7.77:1" },
+  { name: "Red Shadow", hex: "#8F0002", token: "--color-spark-700", use: "Logo shadow tone. Use sparingly: borders on red fills, deep gradients.", contrast: "Never as text on dark" },
+  { name: "Red Tint", hex: "#FDECEB", token: "--color-spark-50", use: "Rare light-surface tint (print, email backgrounds).", contrast: "Pair with ink text" },
+];
+
+const neutrals = [
+  { name: "Ink", hex: "#0B0B0D", token: "--color-ink", use: "Page background, video end card." },
+  { name: "Ink Elevated", hex: "#16161A", token: "--color-ink-elev", use: "Cards, inputs, raised panels." },
+  { name: "Ink Edge", hex: "#232328", token: "--color-ink-edge", use: "Hairline borders on dark." },
+  { name: "Bone", hex: "#F5F3EF", token: "--color-bone", use: "Primary text, captions." },
+  { name: "Bone Muted", hex: "#B8B3A8", token: "--color-bone-muted", use: "Secondary text, address lines." },
+  { name: "Bone Dim", hex: "#6D6A63", token: "--color-bone-dim", use: "Labels and metadata only (not body copy)." },
+];
+
+const logoGradient = ["#FF0003", "#C90A0C", "#C90A0C", "#8F0002"];
+
+const videoSpec = [
+  ["Canvas", "1080 × 1920 (9:16), 30 fps, H.264, AAC 192k"],
+  ["Hook title (first 2.7 s)", "Anton 104, Bone on a Phil's Red #C90A0C box"],
+  ["Captions", "Anton 100, uppercase, Bone with 7 px black outline; the word being spoken turns Phil's Red Bright #FF2B2E"],
+  ["Name tag (2.8–6.3 s)", "Anton 84 name, Inter 42 role in Phil's Red Bright, black outline"],
+  ["End card (2.4 s)", "Ink background · mascot on a Phil's Red ring · Phil's wordmark · (219) 322-3363 · address · philscollisioncenter.com"],
+  ["Audio", "Dialogue cleaned in Descript (Studio Sound), final mix −14 LUFS; music sits ~20 dB under the voice and ducks further while anyone speaks"],
+  ["Hosting", "Cloudinary, folder phils-collision/social/ (never committed to the repo)"],
+  ["Ed on camera", "Face only, in a circle with a Phil's Red ring, over full-screen b-roll. Never a full-body or waist-up shot of Ed."],
+];
+---
+
+<Internal title="Style guide">
+  <header class="mb-14 md:mb-20 flex flex-col gap-3 max-w-2xl">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Style guide</p>
+    <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-[0.95]">
+      One red. Taken from the logo.
+    </h1>
+    <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+      The rules for the website, social videos, print and email. If something isn't on this page, match the closest thing that is. Click any swatch to copy its hex.
+    </p>
+  </header>
+
+  <!-- Logos -->
+  <section class="mb-20">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-6">Logos</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <figure class="rounded-2xl bg-[var(--color-ink-elev)] border border-[var(--color-ink-edge)] p-8 md:p-10 flex flex-col gap-6">
+        <div class="flex-1 flex items-center justify-center min-h-56">
+          <img src={cld("logo-phils-e", 640)} srcset={cldSrcSet("logo-phils-e", [320, 640, 960])} sizes="(min-width: 768px) 420px, 80vw" alt="Phil's Collision Center logo" class="w-full max-w-[420px] h-auto" />
+        </div>
+        <figcaption class="text-sm text-[var(--color-bone-muted)] leading-relaxed">
+          <strong class="text-[var(--color-bone)]">Wordmark</strong> (Cloudinary <code>phils-collision/logo-phils-e</code>; vector in <code>assets/logo-phils-e.svg</code>). Dark backgrounds only, because "Collision Center" is white. Minimum width 160 px. Never recolor it, stretch it, or retype it in another font.
+        </figcaption>
+      </figure>
+      <figure class="rounded-2xl bg-[var(--color-ink-elev)] border border-[var(--color-ink-edge)] p-8 md:p-10 flex flex-col gap-6">
+        <div class="flex-1 flex items-center justify-center min-h-56">
+          <span class="rounded-full p-2 bg-[var(--color-spark-500)]">
+            <img src={cld("mascot-phil", 400)} srcset={cldSrcSet("mascot-phil", [200, 400, 600])} sizes="220px" alt="Phil mascot holding a wrench" class="w-[220px] h-auto block" />
+          </span>
+        </div>
+        <figcaption class="text-sm text-[var(--color-bone-muted)] leading-relaxed">
+          <strong class="text-[var(--color-bone)]">Mascot</strong> (Cloudinary <code>phils-collision/mascot-phil</code>). Its black circle disappears on Ink, so on dark backgrounds always sit it on a Phil's Red ring, as shown. Use it for end cards, avatars and stickers, and keep the wordmark as the main logo.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Reds -->
+  <section class="mb-20">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-2">Red</h2>
+    <p class="text-[var(--color-bone-muted)] mb-6 max-w-2xl">Use only these values. The old orange-red <code>#E5341C</code> is retired, so replace it wherever you find it.</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {reds.map((c) => (
+        <button type="button" data-copy={c.hex} class="swatch text-left rounded-2xl overflow-hidden border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] hover:border-[var(--color-bone-dim)] transition-colors">
+          <span class="block h-28" style={`background:${c.hex}`}></span>
+          <span class="flex flex-col gap-1 p-5">
+            <span class="flex items-baseline justify-between gap-3">
+              <span class="font-display text-xl uppercase">{c.name}</span>
+              <span class="font-mono text-sm text-[var(--color-bone)] copy-label">{c.hex}</span>
+            </span>
+            <code class="text-xs text-[var(--color-bone-dim)]">{c.token}</code>
+            <span class="text-sm text-[var(--color-bone-muted)] leading-snug mt-2">{c.use}</span>
+            <span class="text-xs text-[var(--color-bone-dim)] mt-1">{c.contrast}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+    <div class="mt-6 rounded-2xl border border-[var(--color-ink-edge)] p-5 flex flex-col md:flex-row md:items-center gap-4">
+      <span class="h-12 md:w-64 rounded-lg shrink-0" style={`background:linear-gradient(180deg, ${logoGradient[0]} 0%, ${logoGradient[1]} 20%, ${logoGradient[2]} 80%, ${logoGradient[3]} 100%)`}></span>
+      <p class="text-sm text-[var(--color-bone-muted)]">
+        <strong class="text-[var(--color-bone)]">Logo gradient, for reference only:</strong> <code>#FF0003 → #C90A0C → #8F0002</code>. This is how the red letters get their shine. Don't use it on buttons, text or video graphics; use flat Phil's Red there.
+      </p>
+    </div>
+  </section>
+
+  <!-- Neutrals -->
+  <section class="mb-20">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-6">Neutrals</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {neutrals.map((c) => (
+        <button type="button" data-copy={c.hex} class="swatch text-left rounded-2xl overflow-hidden border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] hover:border-[var(--color-bone-dim)] transition-colors">
+          <span class="block h-20 border-b border-[var(--color-ink-edge)]" style={`background:${c.hex}`}></span>
+          <span class="flex flex-col gap-1 p-4">
+            <span class="font-display text-base uppercase">{c.name}</span>
+            <span class="font-mono text-xs copy-label">{c.hex}</span>
+            <span class="text-xs text-[var(--color-bone-dim)] leading-snug mt-1">{c.use}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <!-- Type -->
+  <section class="mb-20">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-6">Type</h2>
+    <div class="flex flex-col divide-y divide-[var(--color-ink-edge)] border-y border-[var(--color-ink-edge)]">
+      <div class="py-6 grid md:grid-cols-[220px_1fr] gap-3 items-baseline">
+        <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Anton · display</p>
+        <p class="font-display text-5xl md:text-6xl uppercase leading-none">Fixed right the first time</p>
+      </div>
+      <div class="py-6 grid md:grid-cols-[220px_1fr] gap-3 items-baseline">
+        <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Inter · body &amp; UI</p>
+        <p class="text-lg text-[var(--color-bone)] max-w-2xl">Family-run since 1931. I-CAR certified, State Farm DRP, lifetime warranty on every repair.</p>
+      </div>
+      <div class="py-6 grid md:grid-cols-[220px_1fr] gap-3 items-baseline">
+        <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Instrument Serif · quotes</p>
+        <p class="font-editorial text-3xl text-[var(--color-bone)]">&ldquo;Everyone takes care of everybody else here.&rdquo;</p>
+      </div>
+      <div class="py-6 grid md:grid-cols-[220px_1fr] gap-3 items-baseline">
+        <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Eyebrow</p>
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Behind the scenes</p>
+      </div>
+    </div>
+    <p class="text-sm text-[var(--color-bone-dim)] mt-4">The logo's varsity lettering is artwork. Never set "PHIL'S" in a font to imitate it; use the logo file.</p>
+  </section>
+
+  <!-- Components -->
+  <section class="mb-20">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-6">Buttons &amp; accents</h2>
+    <div class="flex flex-wrap items-center gap-4">
+      <a href={`tel:${site.phone.tel}`} class="inline-flex items-center gap-2 rounded-full px-6 py-3 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-white font-medium transition-colors">Call {site.phone.display}</a>
+      <a href="/contact/" class="inline-flex items-center gap-2 rounded-full px-6 py-3 border border-[var(--color-bone-dim)] hover:border-[var(--color-bone)] text-[var(--color-bone)] font-medium transition-colors">Get an estimate</a>
+      <a href="/stories/" class="text-[var(--color-spark-400)] underline decoration-[var(--color-spark-400)]/40 underline-offset-4 hover:decoration-[var(--color-spark-400)]">Text link</a>
+      <span class="inline-block bg-[var(--color-spark-500)] text-white font-display uppercase text-xl px-4 py-1">Hook title box</span>
+    </div>
+    <p class="text-sm text-[var(--color-bone-muted)] mt-4 max-w-2xl">Red fills always carry white text. Red text only ever uses Phil's Red Bright, and never sits on a red fill.</p>
+  </section>
+
+  <!-- Video -->
+  <section class="mb-20">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-6">Social video</h2>
+    <dl class="grid md:grid-cols-[240px_1fr] border-t border-[var(--color-ink-edge)]">
+      {videoSpec.map(([k, v]) => (
+        <>
+          <dt class="py-4 md:border-b border-[var(--color-ink-edge)] text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">{k}</dt>
+          <dd class="pb-4 md:py-4 border-b border-[var(--color-ink-edge)] text-[var(--color-bone)]">{v}</dd>
+        </>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Contact formatting -->
+  <section class="mb-10">
+    <h2 class="font-display text-2xl md:text-3xl uppercase mb-6">Writing the details</h2>
+    <ul class="flex flex-col gap-2 text-[var(--color-bone)]">
+      <li><span class="text-[var(--color-bone-dim)]">Name:</span> Phil's Collision Center (curly apostrophe in prose; never "Phils" or "Phillips")</li>
+      <li><span class="text-[var(--color-bone-dim)]">Phone:</span> {site.phone.display}</li>
+      <li><span class="text-[var(--color-bone-dim)]">Address:</span> 1530 Lincoln Hwy, Schererville, IN</li>
+      <li><span class="text-[var(--color-bone-dim)]">Web:</span> philscollisioncenter.com (lowercase, no www, no https in print)</li>
+    </ul>
+  </section>
+</Internal>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".swatch").forEach((b) => {
+    b.addEventListener("click", async () => {
+      const hex = b.dataset.copy ?? "";
+      const label = b.querySelector<HTMLElement>(".copy-label");
+      try {
+        await navigator.clipboard.writeText(hex);
+        if (label) {
+          label.textContent = "Copied";
+          setTimeout(() => (label.textContent = hex), 1200);
+        }
+      } catch {
+        // Clipboard blocked (e.g. insecure context) — the hex is visible on the card anyway.
+      }
+    });
+  });
+</script>
