@@ -1,0 +1,197 @@
+---
+import Internal from "~/layouts/Internal.astro";
+import { lastBlock, log, usedMinutes, overageMinutes, packages, hm, usd } from "~/data/prepay.ts";
+
+const blockMinutes = lastBlock.hours * 60;
+const usedPct = Math.min((blockMinutes / usedMinutes) * 100, 100);
+---
+
+<Internal title="Prepay">
+  <header class="mb-12 md:mb-16 flex flex-col gap-3 max-w-2xl">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Prepay maintenance</p>
+    <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-[0.95]">Where the hours went</h1>
+    <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
+      Every hour against the {usd(lastBlock.price)} block that started {lastBlock.started}, then the options for the next one.
+    </p>
+  </header>
+
+  <!-- Summary -->
+  <section class="mb-14 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-5">
+      <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Block</p>
+      <p class="font-display text-4xl mt-1">{lastBlock.hours}:00</p>
+      <p class="text-sm text-[var(--color-bone-muted)] mt-1">{usd(lastBlock.price)} at ${lastBlock.rate}/hr, paid in two installments</p>
+    </div>
+    <div class="rounded-xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-5">
+      <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Used</p>
+      <p class="font-display text-4xl mt-1">{hm(usedMinutes)}</p>
+      <p class="text-sm text-[var(--color-bone-muted)] mt-1">Nov 25, 2025 – Oct 30, 2026</p>
+    </div>
+    <div class="rounded-xl border border-[var(--color-spark-500)] bg-[var(--color-ink-elev)] p-5">
+      <p class="text-xs uppercase tracking-widest text-[var(--color-spark-400)]">Over</p>
+      <p class="font-display text-4xl mt-1 text-[var(--color-spark-400)]">{hm(overageMinutes)}</p>
+      <p class="text-sm text-[var(--color-bone-muted)] mt-1">Covered first by the next block</p>
+    </div>
+    <div class="sm:col-span-3 h-2 rounded-full bg-[var(--color-spark-500)] overflow-hidden" aria-hidden="true">
+      <div class="h-full bg-[var(--color-bone)]" style={`width:${usedPct}%`}></div>
+    </div>
+    <p class="sm:col-span-3 text-xs text-[var(--color-bone-dim)] -mt-2">White is the 50 hours prepaid; red is the overage.</p>
+  </section>
+
+  <!-- Detailed log -->
+  <section class="mb-16">
+    <h2 class="font-display text-2xl uppercase mb-6">Detailed log</h2>
+    <div class="flex flex-col gap-10">
+      {log.map(({ period, entries }) => {
+        const total = entries.reduce((s, e) => s + e.minutes, 0);
+        return (
+          <div>
+            <div class="flex items-baseline justify-between border-b border-[var(--color-ink-edge)] pb-2 mb-1">
+              <h3 class="text-xs uppercase tracking-widest text-[var(--color-spark-400)] font-medium">{period}</h3>
+              <span class="text-sm tabular-nums text-[var(--color-bone-muted)]">{hm(total)}</span>
+            </div>
+            <table class="w-full text-sm">
+              <tbody>
+                {entries.map((e) => (
+                  <tr class="border-b border-[var(--color-ink-edge)]/50">
+                    <td class="py-2.5 pr-4 whitespace-nowrap text-[var(--color-bone-dim)] align-top w-24">{e.date}</td>
+                    <td class="py-2.5 pr-4 text-[var(--color-bone)]">
+                      {e.website && <span class="mr-2 inline-block rounded-full border border-[var(--color-ink-edge)] px-2 text-[10px] uppercase tracking-widest text-[var(--color-bone-muted)]">Website</span>}
+                      {e.what}
+                    </td>
+                    <td class="py-2.5 text-right tabular-nums whitespace-nowrap align-top">{hm(e.minutes)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
+      <div class="flex items-baseline justify-between border-t-2 border-[var(--color-bone)] pt-3">
+        <span class="font-display text-xl uppercase">Total</span>
+        <span class="tabular-nums"><strong>{hm(usedMinutes)}</strong> of {lastBlock.hours}:00 · <span class="text-[var(--color-spark-400)]">{hm(overageMinutes)} over</span></span>
+      </div>
+      <p class="text-xs text-[var(--color-bone-dim)] -mt-6">Hours are rounded to the nearest 15 minutes per day.</p>
+    </div>
+  </section>
+
+  <!-- Options -->
+  <section class="mb-10">
+    <h2 class="font-display text-2xl uppercase mb-2">Choose the next block</h2>
+    <p class="text-[var(--color-bone-muted)] max-w-2xl mb-8">
+      The bigger the block, the lower the hourly rate. None of them expire, and you get a monthly statement like this one.
+      The first <strong class="text-[var(--color-bone)]">{hm(overageMinutes)}</strong> of whichever block you pick covers the overage above; the rest is yours to use.
+    </p>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {packages.map((p, i) => {
+        const pct = Math.max((p.leftMinutes / (p.hours * 60)) * 100, 0);
+        return (
+          <article class={`rounded-xl border p-6 flex flex-col gap-4 bg-[var(--color-ink-elev)] ${i === 0 ? "border-[var(--color-spark-500)]" : "border-[var(--color-ink-edge)]"}`}>
+            <div class="flex items-start justify-between gap-3">
+              <p class="font-display text-4xl">{usd(p.price)}</p>
+              {p.tag && <span class={`text-[10px] uppercase tracking-widest rounded-full px-2 py-1 ${i === 0 ? "bg-[var(--color-spark-500)] text-[var(--color-bone)]" : "border border-[var(--color-ink-edge)] text-[var(--color-bone-muted)]"}`}>{p.tag}</span>}
+            </div>
+            <dl class="grid grid-cols-2 gap-y-1 text-sm">
+              <dt class="text-[var(--color-bone-dim)]">Rate</dt><dd class="text-right tabular-nums">${p.rate}/hr</dd>
+              <dt class="text-[var(--color-bone-dim)]">Hours</dt><dd class="text-right tabular-nums">{p.hours}:00</dd>
+              <dt class="text-[var(--color-bone-dim)]">Covers overage</dt><dd class="text-right tabular-nums text-[var(--color-spark-400)]">−{hm(overageMinutes)}</dd>
+              <dt class="text-[var(--color-bone)] font-medium pt-1">Left to use</dt><dd class="text-right tabular-nums font-medium pt-1">{hm(p.leftMinutes)}</dd>
+            </dl>
+            <div class="h-1.5 rounded-full bg-[var(--color-spark-500)] overflow-hidden" aria-hidden="true">
+              <div class="h-full bg-[var(--color-bone)] ml-auto" style={`width:${pct}%`}></div>
+            </div>
+            <button
+              type="button"
+              class="choose mt-auto rounded-full px-5 py-3 font-medium transition-colors bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)]"
+              data-package={usd(p.price)}
+              data-rate={`$${p.rate}/hr`}
+              data-hours={`${p.hours}`}
+              data-left={hm(p.leftMinutes)}
+            >
+              Choose {usd(p.price)}
+            </button>
+          </article>
+        );
+      })}
+    </div>
+    <p class="text-xs text-[var(--color-bone-dim)] mt-4">Smaller blocks ($1,500 and under) wouldn't cover the {hm(overageMinutes)} overage, so they aren't listed.</p>
+  </section>
+
+  <!-- Confirm + send. Netlify Forms detects this form at build time; submissions email Gary. -->
+  <section id="confirm" class="hidden max-w-xl rounded-xl border border-[var(--color-spark-500)] bg-[var(--color-ink-elev)] p-6 scroll-mt-8">
+    <form id="prepay-form" name="prepay-choice" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="flex flex-col gap-4">
+      <input type="hidden" name="form-name" value="prepay-choice" />
+      <p class="hidden"><label>Leave blank <input name="bot-field" /></label></p>
+      <input type="hidden" name="package" />
+      <input type="hidden" name="rate" />
+      <input type="hidden" name="hours" />
+      <input type="hidden" name="hours_left_after_overage" />
+      <input type="hidden" name="overage" value={hm(overageMinutes)} />
+      <p class="text-xs uppercase tracking-widest text-[var(--color-spark-400)]">Confirm your choice</p>
+      <p id="confirm-summary" class="font-display text-2xl"></p>
+      <label class="flex flex-col gap-2">
+        <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Your name</span>
+        <input name="name" value="Ed Kalinowski" required class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] rounded-lg px-4 py-3 focus:border-[var(--color-spark-500)] focus:outline-none" />
+      </label>
+      <label class="flex flex-col gap-2">
+        <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Anything Gary should know? (optional)</span>
+        <textarea name="note" rows="3" class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] rounded-lg px-4 py-3 focus:border-[var(--color-spark-500)] focus:outline-none"></textarea>
+      </label>
+      <div class="flex flex-wrap items-center gap-4">
+        <button type="submit" class="rounded-full px-6 py-3 font-medium bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] transition-colors">Send my choice to Gary</button>
+        <button type="button" id="confirm-cancel" class="text-sm text-[var(--color-bone-muted)] hover:text-[var(--color-bone)]">Pick a different block</button>
+      </div>
+      <p id="confirm-error" class="hidden text-sm text-[var(--color-spark-400)]">That didn't go through. Please try again, or just reply to Gary's email.</p>
+    </form>
+  </section>
+
+  <section id="sent" class="hidden max-w-xl rounded-xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-6">
+    <p class="text-xs uppercase tracking-widest text-[var(--color-spark-400)]">Sent</p>
+    <p class="font-display text-2xl mt-2">Thanks, Ed. Gary has your choice.</p>
+    <p class="text-[var(--color-bone-muted)] mt-2">He'll send the invoice for the <span id="sent-package"></span> block.</p>
+  </section>
+</Internal>
+
+<script>
+  const confirmBox = document.getElementById("confirm")!;
+  const sent = document.getElementById("sent")!;
+  const form = document.getElementById("prepay-form") as HTMLFormElement;
+  const summary = document.getElementById("confirm-summary")!;
+  const error = document.getElementById("confirm-error")!;
+
+  document.querySelectorAll<HTMLButtonElement>("button.choose").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const d = btn.dataset;
+      form.package.value = d.package!;
+      form.rate.value = d.rate!;
+      form.hours.value = d.hours!;
+      form.hours_left_after_overage.value = d.left!;
+      summary.textContent = `${d.package} block · ${d.hours} hours at ${d.rate} · ${d.left} left after the overage`;
+      error.classList.add("hidden");
+      sent.classList.add("hidden");
+      confirmBox.classList.remove("hidden");
+      confirmBox.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  document.getElementById("confirm-cancel")!.addEventListener("click", () => confirmBox.classList.add("hidden"));
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(form) as any).toString(),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      document.getElementById("sent-package")!.textContent = form.package.value;
+      confirmBox.classList.add("hidden");
+      sent.classList.remove("hidden");
+      sent.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch {
+      error.classList.remove("hidden");
+    }
+  });
+</script>
