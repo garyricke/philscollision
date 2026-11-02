@@ -66,7 +66,6 @@ const CLD_VIDEO = "https://res.cloudinary.com/dsbllwpbh/video/upload";
 // Bump after re-uploading the cuts so browsers and the CDN fetch the new renders.
 const CLD_REV = 4;
 const cldVideo = (slug: string) => ({
-  draft: true,
   mp4Url: `${CLD_VIDEO}/q_auto/phils-collision/social/${slug}.mp4?v=${CLD_REV}`,
   poster: `${CLD_VIDEO}/so_1.2,f_auto,q_auto,w_720/phils-collision/social/${slug}.jpg?v=${CLD_REV}`,
 });
