@@ -13,6 +13,7 @@ const themeCounts = themeKeys
     label: themeLabels[key],
     count: videos.filter((v) => v.themes.includes(key)).length,
   }))
+  .filter((t) => t.count > 0)
   .sort((a, b) => b.count - a.count);
 ---
 

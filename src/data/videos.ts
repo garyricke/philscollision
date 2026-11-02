@@ -64,7 +64,7 @@ const mp4 = (id: string, sig: string) =>
 // Captions are burned in; the poster is the frame at 1.2 s (speaker + hook title).
 const CLD_VIDEO = "https://res.cloudinary.com/dsbllwpbh/video/upload";
 // Bump after re-uploading the cuts so browsers and the CDN fetch the new renders.
-const CLD_REV = 2;
+const CLD_REV = 4;
 const cldVideo = (slug: string) => ({
   draft: true,
   mp4Url: `${CLD_VIDEO}/q_auto/phils-collision/social/${slug}.mp4?v=${CLD_REV}`,
@@ -312,9 +312,9 @@ const allVideos: Video[] = [
     themes: ["behind"],
   },
   {
-    slug: "ross-train-bumpers",
-    ...cldVideo("ross-train-bumpers"),
-    speaker: "Ross",
+    slug: "russ-train-bumpers",
+    ...cldVideo("russ-train-bumpers"),
+    speaker: "Russ",
     role: "staff",
     title: "Cars, bikes… train bumpers",
     pullQuote: "We paint motorcycles. We paint Amtrak train bumpers.",
@@ -322,9 +322,9 @@ const allVideos: Video[] = [
     themes: ["behind", "classic"],
   },
   {
-    slug: "ross-dont-ever-give-up",
-    ...cldVideo("ross-dont-ever-give-up"),
-    speaker: "Ross",
+    slug: "russ-dont-ever-give-up",
+    ...cldVideo("russ-dont-ever-give-up"),
+    speaker: "Russ",
     role: "staff",
     title: "25 years on the spray gun",
     pullQuote: "For new people, the most important thing is don't ever give up.",
@@ -332,9 +332,9 @@ const allVideos: Video[] = [
     themes: ["behind"],
   },
   {
-    slug: "ross-no-corporate-rhetoric",
-    ...cldVideo("ross-no-corporate-rhetoric"),
-    speaker: "Ross",
+    slug: "russ-no-corporate-rhetoric",
+    ...cldVideo("russ-no-corporate-rhetoric"),
+    speaker: "Russ",
     role: "staff",
     title: "No corporate rhetoric",
     pullQuote: "Everyone takes care of everybody else here.",
@@ -342,9 +342,9 @@ const allVideos: Video[] = [
     themes: ["behind", "family"],
   },
   {
-    slug: "ross-two-booths",
-    ...cldVideo("ross-two-booths"),
-    speaker: "Ross",
+    slug: "russ-two-booths",
+    ...cldVideo("russ-two-booths"),
+    speaker: "Russ",
     role: "staff",
     title: "Two booths, more cars",
     pullQuote: "With two booths you can really operate more.",
@@ -352,9 +352,9 @@ const allVideos: Video[] = [
     themes: ["expansion", "behind"],
   },
   {
-    slug: "ross-prep-is-everything",
-    ...cldVideo("ross-prep-is-everything"),
-    speaker: "Ross",
+    slug: "russ-prep-is-everything",
+    ...cldVideo("russ-prep-is-everything"),
+    speaker: "Russ",
     role: "staff",
     title: "Paint that won't peel",
     pullQuote: "I want the maximum durability on that car.",
@@ -362,9 +362,9 @@ const allVideos: Video[] = [
     themes: ["behind"],
   },
   {
-    slug: "ross-burn-a-hole",
-    ...cldVideo("ross-burn-a-hole"),
-    speaker: "Ross",
+    slug: "russ-burn-a-hole",
+    ...cldVideo("russ-burn-a-hole"),
+    speaker: "Russ",
     role: "staff",
     title: "How a master painter trains",
     pullQuote: "Burn a hole into the paint. Now you know.",
@@ -372,9 +372,9 @@ const allVideos: Video[] = [
     themes: ["behind"],
   },
   {
-    slug: "ross-safe-place-or-panic-room",
-    ...cldVideo("ross-safe-place-or-panic-room"),
-    speaker: "Ross",
+    slug: "russ-safe-place-or-panic-room",
+    ...cldVideo("russ-safe-place-or-panic-room"),
+    speaker: "Russ",
     role: "staff",
     title: "Safe place or panic room",
     pullQuote: "It's either my safe place or the panic room.",
@@ -382,9 +382,9 @@ const allVideos: Video[] = [
     themes: ["behind"],
   },
   {
-    slug: "ross-learn-by-mistakes",
-    ...cldVideo("ross-learn-by-mistakes"),
-    speaker: "Ross",
+    slug: "russ-learn-by-mistakes",
+    ...cldVideo("russ-learn-by-mistakes"),
+    speaker: "Russ",
     role: "staff",
     title: "Learn by your mistakes",
     pullQuote: "It takes a lot to stay with it.",
