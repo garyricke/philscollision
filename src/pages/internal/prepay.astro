@@ -4,6 +4,7 @@ import { lastBlock, log, usedMinutes, overageMinutes, packages, hm, usd } from "
 
 const blockMinutes = lastBlock.hours * 60;
 const usedPct = Math.min((blockMinutes / usedMinutes) * 100, 100);
+const topRate = Math.max(...packages.map((p) => p.rate));
 ---
 
 <Internal title="Prepay">
@@ -79,7 +80,7 @@ const usedPct = Math.min((blockMinutes / usedMinutes) * 100, 100);
   <section class="mb-10">
     <h2 class="font-display text-2xl uppercase mb-2">Choose the next block</h2>
     <p class="text-[var(--color-bone-muted)] max-w-2xl mb-8">
-      The bigger the block, the lower the hourly rate. None of them expire, and you get a monthly statement like this one.
+      The bigger the block, the lower the hourly rate, so every hour goes further. None of them expire, and you get a monthly statement like this one.
       The first <strong class="text-[var(--color-bone)]">{hm(overageMinutes)}</strong> of whichever block you pick covers the overage above; the rest is yours to use.
     </p>
 
@@ -89,12 +90,21 @@ const usedPct = Math.min((blockMinutes / usedMinutes) * 100, 100);
         return (
           <article class={`rounded-xl border p-6 flex flex-col gap-4 bg-[var(--color-ink-elev)] ${i === 0 ? "border-[var(--color-spark-500)]" : "border-[var(--color-ink-edge)]"}`}>
             <div class="flex items-start justify-between gap-3">
-              <p class="font-display text-4xl">{usd(p.price)}</p>
-              {p.tag && <span class={`text-[10px] uppercase tracking-widest rounded-full px-2 py-1 ${i === 0 ? "bg-[var(--color-spark-500)] text-[var(--color-bone)]" : "border border-[var(--color-ink-edge)] text-[var(--color-bone-muted)]"}`}>{p.tag}</span>}
+              <div>
+                <p class="flex items-baseline gap-1 leading-none">
+                  <span class={`font-display text-6xl ${i === 0 ? "text-[var(--color-spark-400)]" : "text-[var(--color-bone)]"}`}>${p.rate}</span>
+                  <span class="text-lg text-[var(--color-bone-muted)]">/hour</span>
+                </p>
+                <p class="mt-2 text-sm text-[var(--color-bone-muted)]"><strong class="text-[var(--color-bone)] text-base">{usd(p.price)}</strong> buys <strong class="text-[var(--color-bone)] text-base">{p.hours} hours</strong></p>
+              </div>
+              {p.tag && <span class={`text-[10px] uppercase tracking-widest rounded-full px-2 py-1 whitespace-nowrap ${i === 0 ? "bg-[var(--color-spark-500)] text-[var(--color-bone)]" : "border border-[var(--color-ink-edge)] text-[var(--color-bone-muted)]"}`}>{p.tag}</span>}
             </div>
+            {p.rate < topRate && (
+              <p class="text-sm rounded-lg bg-[var(--color-ink)] px-3 py-2 text-[var(--color-bone-muted)]">
+                Worth <strong class="text-[var(--color-bone)]">{usd(p.hours * topRate)}</strong> at ${topRate}/hr. You save <strong class="text-[var(--color-spark-400)]">{usd((topRate - p.rate) * p.hours)}</strong>.
+              </p>
+            )}
             <dl class="grid grid-cols-2 gap-y-1 text-sm">
-              <dt class="text-[var(--color-bone-dim)]">Rate</dt><dd class="text-right tabular-nums">${p.rate}/hr</dd>
-              <dt class="text-[var(--color-bone-dim)]">Hours</dt><dd class="text-right tabular-nums">{p.hours}:00</dd>
               <dt class="text-[var(--color-bone-dim)]">Covers overage</dt><dd class="text-right tabular-nums text-[var(--color-spark-400)]">−{hm(overageMinutes)}</dd>
               <dt class="text-[var(--color-bone)] font-medium pt-1">Left to use</dt><dd class="text-right tabular-nums font-medium pt-1">{hm(p.leftMinutes)}</dd>
             </dl>
@@ -109,7 +119,7 @@ const usedPct = Math.min((blockMinutes / usedMinutes) * 100, 100);
               data-hours={`${p.hours}`}
               data-left={hm(p.leftMinutes)}
             >
-              Choose {usd(p.price)}
+              Choose ${p.rate}/hr · {usd(p.price)}
             </button>
           </article>
         );
