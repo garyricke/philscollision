@@ -28,6 +28,13 @@
   to = "/internal/videos/"
   status = 302
 
+# Short link for Ed's prepay choice (shared by email; keep it working).
+# ?choose=5000 etc. is passed through and preselects that block.
+[[redirects]]
+  from = "/prepay"
+  to = "/internal/prepay/"
+  status = 302
+
 # Security headers
 [[headers]]
   for = "/*"

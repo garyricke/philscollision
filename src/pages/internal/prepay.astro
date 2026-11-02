@@ -185,6 +185,22 @@ const topRate = Math.max(...packages.map((p) => p.rate));
     });
   });
 
+  // ?choose=5000 (from Gary's email) opens that block's confirm box straight away.
+  const pick = new URLSearchParams(location.search).get("choose");
+  if (pick) {
+    const target = [...document.querySelectorAll<HTMLButtonElement>("button.choose")]
+      .find((b) => b.dataset.package?.replace(/\D/g, "") === pick);
+    target?.click();
+    // If the password gate is still up, scroll to the box once it's unlocked.
+    const main = document.getElementById("internal-content")!;
+    new MutationObserver((_, obs) => {
+      if (!main.classList.contains("hidden")) {
+        confirmBox.scrollIntoView({ behavior: "smooth", block: "start" });
+        obs.disconnect();
+      }
+    }).observe(main, { attributes: true, attributeFilter: ["class"] });
+  }
+
   document.getElementById("confirm-cancel")!.addEventListener("click", () => confirmBox.classList.add("hidden"));
 
   form.addEventListener("submit", async (e) => {
