@@ -1,0 +1,233 @@
+---
+// Estimate requests viewer (/requests). Staff-only: the password is checked by
+// netlify/functions/requests.mjs on the server, and no customer data is in
+// this page's HTML or JS until it passes.
+import "~/styles/global.css";
+import { site } from "~/data/site.ts";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Estimate requests · {site.name}</title>
+  </head>
+  <body class="bg-[var(--color-ink)] text-[var(--color-bone)] min-h-screen">
+    <!-- Sign-in -->
+    <section id="signin" class="min-h-screen flex items-center justify-center p-6">
+      <form id="signin-form" class="w-full max-w-sm flex flex-col gap-5 text-center">
+        <div class="flex flex-col gap-2 mb-2">
+          <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Staff only</p>
+          <h1 class="font-display text-3xl text-[var(--color-bone)]">Estimate requests</h1>
+          <p class="text-sm text-[var(--color-bone-muted)]">Every request sent from the website's estimate form.</p>
+        </div>
+        <label class="flex flex-col gap-2 text-left">
+          <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">Password</span>
+          <input
+            id="pw"
+            type="password"
+            autocomplete="current-password"
+            autofocus
+            required
+            class="bg-[var(--color-ink-elev)] border border-[var(--color-ink-edge)] rounded-lg px-4 py-3 text-[var(--color-bone)] focus:border-[var(--color-spark-500)] focus:outline-none"
+          />
+        </label>
+        <p id="signin-error" class="hidden text-sm text-[var(--color-spark-400)]" role="alert"></p>
+        <button
+          id="signin-btn"
+          type="submit"
+          class="bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] disabled:opacity-60 text-[var(--color-bone)] px-6 py-3 rounded-full font-medium transition-colors"
+        >
+          View requests
+        </button>
+        <a href="/" class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)] hover:text-[var(--color-bone-muted)] mt-2">
+          ← Back to site
+        </a>
+      </form>
+    </section>
+
+    <!-- Requests -->
+    <main id="app" class="hidden container-page py-10 md:py-16">
+      <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium mb-2">Staff only</p>
+          <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-none">Estimate requests</h1>
+          <p id="summary" class="mt-3 text-sm text-[var(--color-bone-muted)]"></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="refresh" type="button" class="inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-4 py-2.5 rounded-full text-sm font-medium transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg>
+            Refresh
+          </button>
+          <button id="csv" type="button" class="inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-4 py-2.5 rounded-full text-sm font-medium transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+            Download spreadsheet
+          </button>
+          <button id="signout" type="button" class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)] hover:text-[var(--color-bone)] transition-colors px-2">
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <label class="relative block mb-8 max-w-md">
+        <span class="sr-only">Search requests</span>
+        <svg class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-bone-dim)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input
+          id="search"
+          type="search"
+          placeholder="Search name, phone, vehicle, insurance…"
+          class="w-full bg-[var(--color-ink-elev)] border border-[var(--color-ink-edge)] rounded-full pl-11 pr-4 py-2.5 text-[var(--color-bone)] placeholder:text-[var(--color-bone-dim)] focus:border-[var(--color-spark-500)] focus:outline-none"
+        />
+      </label>
+
+      <p id="app-error" class="hidden mb-6 text-sm text-[var(--color-spark-400)]" role="alert"></p>
+      <div id="list" class="flex flex-col gap-4"></div>
+      <p id="empty" class="hidden text-[var(--color-bone-muted)]">No requests match.</p>
+    </main>
+
+    <script>
+      const KEY = "phils-requests-pw";
+      const $ = (id: string) => document.getElementById(id)!;
+      const signin = $("signin"), app = $("app");
+      const form = $("signin-form") as HTMLFormElement;
+      const pw = $("pw") as HTMLInputElement;
+      const btn = $("signin-btn") as HTMLButtonElement;
+      const signinError = $("signin-error"), appError = $("app-error");
+      const list = $("list"), empty = $("empty"), summary = $("summary");
+      const search = $("search") as HTMLInputElement;
+
+      type Field = { name: string; title: string };
+      type Sub = { id: string; number: number; createdAt: string; values: Record<string, string> };
+      type Form = { name: string; label: string; count: number; fields: Field[]; submissions: Sub[] };
+      let data: Form | null = null;
+
+      const esc = (s: string) =>
+        s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+      const fmtDate = (iso: string) =>
+        new Date(iso).toLocaleString("en-US", {
+          timeZone: "America/Chicago", weekday: "short", month: "short", day: "numeric",
+          year: "numeric", hour: "numeric", minute: "2-digit",
+        });
+      const digits = (s: string) => s.replace(/[^\d+]/g, "");
+
+      const ICON = {
+        phone: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>',
+        mail: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg>',
+      };
+
+      function render() {
+        if (!data) return;
+        const q = search.value.trim().toLowerCase();
+        const subs = data.submissions.filter((s) =>
+          !q || Object.values(s.values).join(" ").toLowerCase().includes(q));
+        const shownFields = data.fields.filter((f) => !["name", "phone", "email"].includes(f.name));
+
+        list.innerHTML = subs.map((s) => {
+          const v = s.values;
+          const name = v.name || "(no name)";
+          const actions = [
+            v.phone ? `<a href="tel:${esc(digits(v.phone))}" class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-4 py-2 rounded-full text-sm font-medium">${ICON.phone}${esc(v.phone)}</a>` : "",
+            v.email ? `<a href="mailto:${esc(v.email)}?subject=${encodeURIComponent("Your estimate request at Phil's Collision Center")}" class="inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-4 py-2 rounded-full text-sm font-medium">${ICON.mail}${esc(v.email)}</a>` : "",
+          ].join("");
+          const rows = shownFields
+            .filter((f) => v[f.name])
+            .map((f) => `<div class="grid sm:grid-cols-[11rem_1fr] gap-1 sm:gap-4 py-2.5 border-t border-[var(--color-ink-edge)]">
+                <dt class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)] sm:pt-1">${esc(f.title)}</dt>
+                <dd class="text-[var(--color-bone)] whitespace-pre-wrap break-words">${esc(v[f.name])}</dd></div>`)
+            .join("");
+          return `<article class="rounded-2xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-6 md:p-7">
+              <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+                <div>
+                  <h2 class="font-display text-2xl text-[var(--color-bone)] leading-tight">${esc(name)}</h2>
+                  <p class="text-sm text-[var(--color-bone-muted)] mt-1">${esc(fmtDate(s.createdAt))} · #${s.number}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">${actions}</div>
+              </div>
+              <dl>${rows}</dl>
+            </article>`;
+        }).join("");
+        empty.classList.toggle("hidden", subs.length > 0);
+      }
+
+      async function load(password: string): Promise<boolean> {
+        const res = await fetch("/.netlify/functions/requests", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ password }),
+        }).catch(() => null);
+        const body = res ? await res.json().catch(() => ({})) : {};
+        if (!res || !res.ok) {
+          throw Object.assign(new Error(body.error || "Couldn't reach the server. Check your connection and try again."), { status: res?.status });
+        }
+        data = (body.forms && body.forms[0]) || { name: "estimate", label: "Estimate requests", count: 0, fields: [], submissions: [] };
+        const latest = data!.submissions[0];
+        summary.textContent = `${data!.count} ${data!.count === 1 ? "request" : "requests"}` +
+          (latest ? ` · newest ${fmtDate(latest.createdAt)}` : "") +
+          ` · checked ${new Date(body.checkedAt).toLocaleTimeString("en-US", { timeZone: "America/Chicago", hour: "numeric", minute: "2-digit" })}`;
+        render();
+        return true;
+      }
+
+      function show(signedIn: boolean) {
+        signin.classList.toggle("hidden", signedIn);
+        app.classList.toggle("hidden", !signedIn);
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        btn.disabled = true; btn.textContent = "Checking…";
+        signinError.classList.add("hidden");
+        try {
+          await load(pw.value);
+          sessionStorage.setItem(KEY, pw.value);
+          show(true);
+        } catch (err: any) {
+          signinError.textContent = err.message;
+          signinError.classList.remove("hidden");
+          pw.select();
+        } finally {
+          btn.disabled = false; btn.textContent = "View requests";
+        }
+      });
+
+      $("refresh").addEventListener("click", async () => {
+        appError.classList.add("hidden");
+        try { await load(sessionStorage.getItem(KEY) || ""); }
+        catch (err: any) {
+          if (err.status === 401) { sessionStorage.removeItem(KEY); show(false); return; }
+          appError.textContent = err.message; appError.classList.remove("hidden");
+        }
+      });
+
+      $("signout").addEventListener("click", () => {
+        sessionStorage.removeItem(KEY);
+        data = null; list.innerHTML = ""; pw.value = "";
+        show(false); pw.focus();
+      });
+
+      search.addEventListener("input", render);
+
+      $("csv").addEventListener("click", () => {
+        if (!data) return;
+        const cell = (s: string) => `"${String(s).replace(/"/g, '""')}"`;
+        const head = ["Received", "Number", ...data.fields.map((f) => f.title)];
+        const lines = [head.map(cell).join(",")].concat(
+          data.submissions.map((s) => [fmtDate(s.createdAt), String(s.number), ...data!.fields.map((f) => s.values[f.name] || "")].map(cell).join(",")));
+        const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `phils-estimate-requests-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      });
+
+      // Stay signed in for this browser tab
+      const saved = sessionStorage.getItem(KEY);
+      if (saved) {
+        load(saved).then(() => show(true)).catch(() => sessionStorage.removeItem(KEY));
+      }
+    </script>
+  </body>
+</html>
