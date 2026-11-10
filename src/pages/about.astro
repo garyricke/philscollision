@@ -4,6 +4,11 @@ import SectionHeader from "~/components/SectionHeader.astro";
 import VideoCard from "~/components/VideoCard.astro";
 import { videos } from "~/data/videos.ts";
 import { site } from "~/data/site.ts";
+import { cld, cldSrcSet } from "~/data/cloudinary.ts";
+
+// Team photo from the 23 Oct 2026 shop visit (AI-relit; sign message added; blacktop sealed and trees softened).
+// Swap the ID to change versions: group-G-sealed-v2 ("Meet the team") or group-H-sealed-v2 ("95 years").
+const TEAM_PHOTO = "group-shot/group-G-sealed-v2";
 
 const aboutVids = ["eds-story", "ivan-master-painter", "ward"]
   .map((slug) => videos.find((v) => v.slug === slug)!)
@@ -89,14 +94,29 @@ const values = [
     </div>
   </section>
 
-  <!-- The team (videos) -->
+  <!-- The team (group photo + videos) -->
   <section class="bg-[var(--color-ink-elev)] py-20 md:py-28 border-y border-[var(--color-ink-edge)]">
     <div class="container-page">
       <SectionHeader
         eyebrow="The team"
-        title="Two voices from the shop."
+        title="The crew behind every repair."
         link={{ label: `All ${videos.length} stories`, href: "/stories/" }}
       />
+      <figure class="mb-16 md:mb-20 max-w-2xl mx-auto">
+        <img
+          src={cld(TEAM_PHOTO, 1600)}
+          srcset={cldSrcSet(TEAM_PHOTO, [480, 672, 960, 1344])}
+          sizes="(min-width: 768px) 672px, 100vw"
+          width="2304"
+          height="3072"
+          alt="The 13-person Phil's Collision Center team standing together under the shop sign in Schererville, Indiana"
+          class="w-full h-auto rounded-2xl border border-[var(--color-ink-edge)]"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="mt-4 text-sm text-[var(--color-bone-muted)] text-center">The Phil's crew under the shop sign, October 2026.</figcaption>
+      </figure>
+      <h3 class="font-display text-3xl md:text-4xl text-[var(--color-bone)] text-center mb-10">Two voices from the shop.</h3>
       <div class="grid sm:grid-cols-2 gap-10 max-w-3xl mx-auto">
         <VideoCard video={aboutVids[1]} />
         <VideoCard video={aboutVids[2]} />

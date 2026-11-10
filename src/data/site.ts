@@ -28,7 +28,7 @@ export const site = {
     tel: "+12193223363",
   },
 
-  email: "info@philscollisioncenter.com", // TODO: confirm with client
+  email: "philscollision@philscollisioncenter.com", // shop inbox, confirmed 2026-11-10
 
   // Hours — TODO: confirm with client; placeholders below match typical body shop hours
   hours: [
