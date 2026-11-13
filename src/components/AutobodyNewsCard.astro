@@ -3,6 +3,7 @@
 // not out to the ad-heavy source page (that's cited on the story page).
 import { autobodyNews as a } from "~/data/press.ts";
 import { cld, cldSrcSet } from "~/data/cloudinary.ts";
+import AutobodyNewsLogo from "~/components/AutobodyNewsLogo.astro";
 interface Props { heading?: "h2" | "h3" }
 const { heading = "h2" } = Astro.props;
 const H = heading;
@@ -14,7 +15,11 @@ const TEAM_PHOTO = "group-shot/group-G-sealed-v2";
   class="scroll-mt-24 group rounded-2xl border border-[var(--color-ink-edge)] hover:border-[var(--color-spark-500)]/60 bg-[var(--color-ink-elev)] p-8 md:p-12 grid md:grid-cols-12 gap-8 md:gap-12 items-center transition-colors"
 >
   <div class="md:col-span-8 flex flex-col gap-6">
-    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">As featured · {a.outlet}, {a.date}</p>
+    <div class="flex flex-col gap-3">
+      <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">As featured in</p>
+      <AutobodyNewsLogo class="h-6 md:h-8 w-auto self-start text-[var(--color-bone)]" />
+      <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">{a.descriptor} · {a.date}</p>
+    </div>
     <H class="font-display text-4xl md:text-6xl text-[var(--color-bone)] leading-[0.95]">Knowledge over conflict.</H>
     <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone-muted)] leading-snug">{a.summary}</p>
     <blockquote class="border-l-2 border-[var(--color-spark-500)] pl-5">

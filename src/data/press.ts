@@ -7,6 +7,7 @@ export const autobodyNews = {
   outlet: "Autobody News",
   date: "November 2026",
   read: "5 min read",
+  descriptor: "Independent collision-industry trade publication",
   url: "https://www.autobodynews.com/news/knowledge-over-conflict-a-collision-repair-veterans-lessons-on-insurance-negotiations",
   title: "Knowledge Over Conflict: A Collision Repair Veteran’s Lessons on Insurance Negotiations",
   /** Our retelling, the page the site drives people to. */

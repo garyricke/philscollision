@@ -9,6 +9,7 @@ import Base from "~/layouts/Base.astro";
 import { site } from "~/data/site.ts";
 import { cld, cldSrcSet } from "~/data/cloudinary.ts";
 import { autobodyNews } from "~/data/press.ts";
+import AutobodyNewsLogo from "~/components/AutobodyNewsLogo.astro";
 
 const TEAM_PHOTO = "group-shot/group-G-sealed-v2";
 
@@ -97,9 +98,17 @@ const forYou = [
   <section class="container-page pt-16 md:pt-24 pb-16 md:pb-24">
     <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-start">
       <div class="md:col-span-7 flex flex-col gap-6">
-        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">
-          As featured in {autobodyNews.outlet} · {autobodyNews.date}
-        </p>
+        <a
+          href={autobodyNews.url}
+          target="_blank"
+          rel="noopener"
+          class="self-start flex flex-col gap-3 group"
+          aria-label="Read the original article on Autobody News"
+        >
+          <span class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">As featured in</span>
+          <AutobodyNewsLogo class="h-7 md:h-9 w-auto text-[var(--color-bone)] group-hover:text-white transition-colors" />
+          <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">{autobodyNews.descriptor} · {autobodyNews.date}</span>
+        </a>
         <h1 class="font-display text-5xl md:text-7xl text-[var(--color-bone)] leading-[0.95]">
           Knowledge over conflict.
         </h1>
@@ -219,10 +228,29 @@ const forYou = [
         </a>
       </div>
     </div>
-    <p class="mt-8 text-sm text-[var(--color-bone-dim)] max-w-3xl">
-      Source: Leona Scott, &ldquo;{autobodyNews.title},&rdquo; {autobodyNews.outlet}, November 11, 2026.
-      This page tells the story in our own words, and the quotes come from Ed's interview answers.
-      <a href={autobodyNews.url} target="_blank" rel="noopener" class="underline underline-offset-4 hover:text-[var(--color-bone)]">Read the original article</a>.
-    </p>
+    <!-- Source citation -->
+    <a
+      href={autobodyNews.url}
+      target="_blank"
+      rel="noopener"
+      class="group mt-8 rounded-2xl border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] p-8 md:p-10 grid md:grid-cols-12 gap-6 md:gap-10 items-center transition-colors"
+    >
+      <div class="md:col-span-4 flex flex-col gap-3">
+        <span class="text-xs uppercase tracking-[0.3em] text-[var(--color-bone-dim)] font-medium">Source</span>
+        <AutobodyNewsLogo class="h-6 md:h-7 w-auto self-start text-[var(--color-bone)]" />
+        <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">{autobodyNews.descriptor}</span>
+      </div>
+      <div class="md:col-span-8 flex flex-col gap-3">
+        <p class="font-display text-2xl md:text-3xl text-[var(--color-bone)] leading-tight">&ldquo;{autobodyNews.title}&rdquo;</p>
+        <p class="text-sm text-[var(--color-bone-muted)]">By Leona Scott · Published November 11, 2026</p>
+        <p class="text-sm text-[var(--color-bone-dim)] leading-relaxed">
+          This page tells the story in our own words, and the quotes come from Ed's interview answers. The original reporting belongs to Autobody News, and their logo is used here only to identify their coverage.
+        </p>
+        <span class="self-start inline-flex items-center gap-2 text-sm font-medium text-[var(--color-bone)] underline underline-offset-4">
+          Read the original on autobodynews.com
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+        </span>
+      </div>
+    </a>
   </section>
 </Base>
