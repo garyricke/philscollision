@@ -1,0 +1,228 @@
+---
+/**
+ * Our retelling of the Autobody News feature (Nov 11, 2026, by Leona Scott).
+ * Written in our own words. The quotes are Ed's own answers from his written
+ * interview with Leona (Nov 5, 2026), which he cleared for quoting. No article
+ * text or Autobody News images are copied; the source is cited at top and bottom.
+ */
+import Base from "~/layouts/Base.astro";
+import { site } from "~/data/site.ts";
+import { cld, cldSrcSet } from "~/data/cloudinary.ts";
+import { autobodyNews } from "~/data/press.ts";
+
+const TEAM_PHOTO = "group-shot/group-G-sealed-v2";
+
+const stats = [
+  { big: "46", small: "years in collision repair" },
+  { big: "Ford · Lincoln", small: "OEM certified, with Kia and Hyundai in progress" },
+  { big: "$1,600", small: "in calibrations alone on one 2024 Honda Accord" },
+];
+
+const sections = [
+  {
+    id: "procedure",
+    eyebrow: "01",
+    title: "The estimate is a position, not an opening bid.",
+    body: [
+      "Most shops treat the first number they send an insurer as the start of a haggle. At Phil's, the estimate is built from what the manufacturer says the repair requires, and every estimator is expected to defend it on those terms.",
+      "When an appraiser questions a step or a labor time, Ed doesn't raise his voice. He changes the subject from opinion to evidence: what the OEM procedure calls for, why it's there, and what happens to the car and the people in it if the step gets skipped. He calls that a standard, not stubbornness.",
+    ],
+    quote: "Our estimators know how to explain to insurance companies that we stand by OEM repair procedures. We will not accept an appraiser lacking that caliber of knowledge.",
+  },
+  {
+    id: "total-loss",
+    eyebrow: "02",
+    title: "Sometimes the best repair is no repair at all.",
+    body: [
+      "Following the procedure doesn't always end with a repair. On one 2024 Honda Accord sedan, the required sensor calibrations alone added $1,600, and they had to be done at the Honda dealership. Costs like that can push a car past the point where fixing it makes sense.",
+      "When that happens, the work still counts. The teardown is what proves the car is a total loss, and in several cases the shop has been paid for that teardown, plus storage and administrative fees.",
+      "Telling an owner their car is totaled is technically the insurer's job. But the car is sitting at Phil's, so Ed walks the owner through the reasons himself, in plain language. He says that once people hear the whole story, they agree.",
+    ],
+    quote: "The way I explain and discuss this with the vehicle owner is by using the rule of thumb that sometimes the best repair is no repair at all.",
+  },
+  {
+    id: "walk-away",
+    eyebrow: "03",
+    title: "Know when to walk away.",
+    body: [
+      "Not every negotiation ends in a handshake. Phil's has turned down jobs more than a few times, usually with low-rated insurers on cars that were towed in and couldn't be driven.",
+      "Ed's point to other shop owners is that being willing to say no is part of having leverage. A shop that will take any job on any terms has nothing to stand on when the terms don't allow a safe repair.",
+    ],
+    quote: "We here at Phil's Collision Center will not jeopardize any repair just to satisfy the insurance companies.",
+  },
+  {
+    id: "equipment",
+    eyebrow: "04",
+    title: "The right equipment is the argument.",
+    body: [
+      "Ed's confidence across the table comes from what's behind him: OEM certifications, trained estimators, and equipment that meets the manufacturer's specs. If a shop can't perform the calibration or the specified repair, it can't argue for being paid to do it.",
+      "He had a direct message for smaller independent shops. Repairing collision-damaged cars without the right equipment exposes a shop to serious legal liability. Investing in the tools costs far less than a lawsuit.",
+    ],
+    quote: "Proper equipment for proper repairs is a must to survive in this challenging industry.",
+  },
+  {
+    id: "costs",
+    eyebrow: "05",
+    title: "Insurers already know repairs cost more.",
+    body: [
+      "Ed doesn't spend time convincing insurers that modern repairs are expensive. In his view, they know. Look at what auto insurance premiums cost today: they're at an all-time high.",
+      "So the job isn't proving that costs went up. It's justifying each procedure on its own merits, with the documentation to back it up.",
+    ],
+    quote: "I definitely believe the insurance companies know the modern repairs cost more now than ever before.",
+  },
+];
+
+const principles = [
+  { t: "Know the procedure.", d: "Learn the OEM repair procedures, and make sure every estimator can explain them." },
+  { t: "Document everything.", d: "Put the evidence on paper so the conversation is about facts, not opinions." },
+  { t: "Explain, don't argue.", d: "Calm explanation wins more fair settlements than a shouting match." },
+  { t: "Be ready to say no.", d: "Turn down any repair you can't do correctly." },
+  { t: "Invest in the tools.", d: "Equipment and certifications are what make your estimate stand up." },
+];
+
+const forYou = [
+  { t: "Repaired to the manufacturer's procedure", d: "Not to whatever the insurer wants to pay for." },
+  { t: "We deal with the insurance company", d: "Our estimators handle the back-and-forth with appraisers, with documentation." },
+  { t: "The truth, even when it's hard", d: "If a repair doesn't make sense, Ed will sit down with you and explain why." },
+];
+---
+
+<Base
+  title="Knowledge over conflict: Ed on insurance negotiations"
+  path="/press/knowledge-over-conflict/"
+  description="Autobody News featured Ed Kalinowski of Phil's Collision Center on negotiating with insurers: follow the OEM procedure, document everything, explain total losses honestly, and know when to walk away."
+  ogImage={cld(TEAM_PHOTO, 1200)}
+>
+  <!-- Hero -->
+  <section class="container-page pt-16 md:pt-24 pb-16 md:pb-24">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-start">
+      <div class="md:col-span-7 flex flex-col gap-6">
+        <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">
+          As featured in {autobodyNews.outlet} · {autobodyNews.date}
+        </p>
+        <h1 class="font-display text-5xl md:text-7xl text-[var(--color-bone)] leading-[0.95]">
+          Knowledge over conflict.
+        </h1>
+        <p class="font-editorial text-2xl md:text-3xl text-[var(--color-bone-muted)] leading-snug max-w-2xl">
+          After 46 years in collision repair, Ed Kalinowski wins arguments with insurers by knowing more, not by shouting louder. Here's how he does it.
+        </p>
+        <div class="flex flex-col gap-4 text-lg text-[var(--color-bone-muted)] leading-relaxed max-w-2xl">
+          <p>
+            Autobody News, one of the collision industry's trade publications, interviewed Ed for a feature on how shops should handle insurance negotiations. Cars are more complex than ever, repairs cost more, and the back-and-forth with insurers has become part of nearly every job.
+          </p>
+          <p>
+            Ed's answer is simple. The shops that get paid fairly aren't the loudest ones. They're the ones that know the manufacturer's repair procedures best, can prove it on paper, and can tell when a car shouldn't be fixed at all.
+          </p>
+        </div>
+        <p class="text-sm text-[var(--color-bone-dim)]">
+          Based on the feature by Leona Scott, published November 11, 2026.
+          <a href={autobodyNews.url} target="_blank" rel="noopener" class="underline underline-offset-4 hover:text-[var(--color-bone)]">See the original</a>.
+        </p>
+      </div>
+
+      <figure class="md:col-span-5">
+        <img
+          src={cld(TEAM_PHOTO, 1200)}
+          srcset={cldSrcSet(TEAM_PHOTO, [480, 672, 960, 1344])}
+          sizes="(min-width: 768px) 40vw, 100vw"
+          width="2304"
+          height="3072"
+          alt="The 13-person Phil's Collision Center team standing together under the shop sign in Schererville, Indiana"
+          class="w-full h-auto rounded-2xl border border-[var(--color-ink-edge)]"
+          decoding="async"
+          fetchpriority="high"
+        />
+        <figcaption class="mt-3 text-sm text-[var(--color-bone-muted)]">The Phil's crew under the shop sign in Schererville.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="border-y border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)]">
+    <div class="container-page grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[var(--color-ink-edge)]">
+      {stats.map((s) => (
+        <div class="py-8 sm:px-8 first:sm:pl-0 flex flex-col gap-2">
+          <span class="font-display text-4xl md:text-5xl text-[var(--color-spark-400)] leading-none">{s.big}</span>
+          <span class="text-[var(--color-bone-muted)] leading-snug">{s.small}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- The story, section by section -->
+  <section class="container-page py-20 md:py-28">
+    <div class="max-w-3xl mx-auto flex flex-col gap-20 md:gap-24">
+      {sections.map((s) => (
+        <article id={s.id} class="scroll-mt-24 flex flex-col gap-6">
+          <p class="font-display text-2xl text-[var(--color-spark-400)]">{s.eyebrow}</p>
+          <h2 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-[0.98]">{s.title}</h2>
+          <div class="flex flex-col gap-5 text-lg md:text-xl text-[var(--color-bone-muted)] leading-relaxed">
+            {s.body.map((p) => <p>{p}</p>)}
+          </div>
+          <blockquote class="border-l-2 border-[var(--color-spark-500)] pl-6 py-1">
+            <p class="font-editorial text-2xl md:text-3xl text-[var(--color-bone)] leading-snug">&ldquo;{s.quote}&rdquo;</p>
+            <footer class="mt-3 text-sm text-[var(--color-bone-dim)]">Ed Kalinowski, owner</footer>
+          </blockquote>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Five principles -->
+  <section class="bg-[var(--color-ink-elev)] border-y border-[var(--color-ink-edge)] py-20 md:py-28">
+    <div class="container-page">
+      <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium mb-4">The takeaway</p>
+      <h2 class="font-display text-4xl md:text-6xl text-[var(--color-bone)] leading-[0.95] mb-12 max-w-3xl">Five rules Ed negotiates by.</h2>
+      <ol class="grid md:grid-cols-5 gap-px bg-[var(--color-ink-edge)] border border-[var(--color-ink-edge)] rounded-2xl overflow-hidden">
+        {principles.map((p, i) => (
+          <li class="bg-[var(--color-ink)] p-7 flex flex-col gap-3">
+            <span class="font-display text-3xl text-[var(--color-spark-400)]">{i + 1}</span>
+            <h3 class="font-display text-2xl text-[var(--color-bone)] leading-tight">{p.t}</h3>
+            <p class="text-[var(--color-bone-muted)] leading-relaxed">{p.d}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="mt-10 font-editorial text-xl md:text-2xl text-[var(--color-bone-muted)] max-w-3xl leading-snug">
+        None of it guarantees every supplement gets approved. But knowledge earns credibility, documentation supplies the proof, and staying professional gives every car the best shot at a fair settlement and a correct repair.
+      </p>
+    </div>
+  </section>
+
+  <!-- What it means for customers -->
+  <section class="container-page py-20 md:py-28">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium mb-4">What it means for you</p>
+    <h2 class="font-display text-4xl md:text-6xl text-[var(--color-bone)] leading-[0.95] mb-12 max-w-3xl">Your car, fixed the way the maker intended.</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      {forYou.map((f) => (
+        <div class="rounded-2xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-8 flex flex-col gap-3">
+          <svg class="w-6 h-6 text-[var(--color-spark-400)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          <h3 class="font-display text-2xl text-[var(--color-bone)] leading-tight">{f.t}</h3>
+          <p class="text-[var(--color-bone-muted)] leading-relaxed">{f.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- CTA + source -->
+  <section class="container-page pb-20 md:pb-32">
+    <div class="rounded-2xl border border-[var(--color-spark-500)]/30 bg-[var(--color-ink-elev)] p-10 md:p-14 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="flex flex-col gap-3 max-w-xl">
+        <h2 class="font-display text-3xl md:text-5xl text-[var(--color-bone)] leading-tight">Dealing with an insurance claim?</h2>
+        <p class="text-[var(--color-bone-muted)] text-lg">Bring it to a shop that knows the procedure. Estimates are free.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/contact/" class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          Get a free estimate
+        </a>
+        <a href={`tel:${site.phone.tel}`} class="inline-flex items-center justify-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium">
+          {site.phone.display}
+        </a>
+      </div>
+    </div>
+    <p class="mt-8 text-sm text-[var(--color-bone-dim)] max-w-3xl">
+      Source: Leona Scott, &ldquo;{autobodyNews.title},&rdquo; {autobodyNews.outlet}, November 11, 2026.
+      This page tells the story in our own words, and the quotes come from Ed's interview answers.
+      <a href={autobodyNews.url} target="_blank" rel="noopener" class="underline underline-offset-4 hover:text-[var(--color-bone)]">Read the original article</a>.
+    </p>
+  </section>
+</Base>

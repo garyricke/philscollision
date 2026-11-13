@@ -1,29 +1,42 @@
 ---
-// Autobody News feature (Nov 2026). Whole card links out to the article.
+// Autobody News feature (Nov 2026). Links to our own retelling of the story,
+// not out to the ad-heavy source page (that's cited on the story page).
 import { autobodyNews as a } from "~/data/press.ts";
+import { cld, cldSrcSet } from "~/data/cloudinary.ts";
 interface Props { heading?: "h2" | "h3" }
 const { heading = "h2" } = Astro.props;
 const H = heading;
+const TEAM_PHOTO = "group-shot/group-G-sealed-v2";
 ---
 <a
   id="autobody-news"
-  href={a.url}
-  target="_blank"
-  rel="noopener"
-  class="scroll-mt-24 group rounded-2xl border border-[var(--color-ink-edge)] hover:border-[var(--color-spark-500)]/60 bg-[var(--color-ink-elev)] p-8 md:p-12 flex flex-col gap-6 transition-colors"
+  href={a.story}
+  class="scroll-mt-24 group rounded-2xl border border-[var(--color-ink-edge)] hover:border-[var(--color-spark-500)]/60 bg-[var(--color-ink-elev)] p-8 md:p-12 grid md:grid-cols-12 gap-8 md:gap-12 items-center transition-colors"
 >
-  <div class="flex items-center justify-between gap-4 flex-wrap">
+  <div class="md:col-span-8 flex flex-col gap-6">
     <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">As featured · {a.outlet}, {a.date}</p>
-    <span class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)]">{a.read}</span>
+    <H class="font-display text-4xl md:text-6xl text-[var(--color-bone)] leading-[0.95]">Knowledge over conflict.</H>
+    <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone-muted)] leading-snug">{a.summary}</p>
+    <blockquote class="border-l-2 border-[var(--color-spark-500)] pl-5">
+      <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone)] leading-snug">&ldquo;{a.quote}&rdquo;</p>
+      <footer class="mt-2 text-sm text-[var(--color-bone-dim)]">Ed Kalinowski, owner</footer>
+    </blockquote>
+    <span class="self-start inline-flex items-center gap-2 bg-[var(--color-spark-500)] group-hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-5 py-3 rounded-full text-sm font-medium transition-colors">
+      Read Ed's story
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+    </span>
   </div>
-  <H class="font-display text-3xl md:text-5xl text-[var(--color-bone)] leading-[1.02] max-w-3xl">{a.title}</H>
-  <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone-muted)] leading-snug max-w-2xl">{a.summary}</p>
-  <blockquote class="border-l-2 border-[var(--color-spark-500)] pl-5 max-w-2xl">
-    <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone)] leading-snug">&ldquo;{a.quote}&rdquo;</p>
-    <footer class="mt-2 text-sm text-[var(--color-bone-dim)]">Ed Kalinowski, owner</footer>
-  </blockquote>
-  <span class="self-start inline-flex items-center gap-2 border border-[var(--color-ink-edge)] group-hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-5 py-3 rounded-full text-sm font-medium transition-colors">
-    Read the article on Autobody News
-    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
-  </span>
+  <div class="md:col-span-4">
+    <img
+      src={cld(TEAM_PHOTO, 672)}
+      srcset={cldSrcSet(TEAM_PHOTO, [336, 480, 672])}
+      sizes="(min-width: 768px) 30vw, 100vw"
+      width="2304"
+      height="3072"
+      alt="The Phil's Collision Center team under the shop sign"
+      class="w-full h-auto rounded-xl border border-[var(--color-ink-edge)]"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
 </a>
