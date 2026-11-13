@@ -4,6 +4,7 @@ import Base from "~/layouts/Base.astro";
 import SectionHeader from "~/components/SectionHeader.astro";
 import VideoCard from "~/components/VideoCard.astro";
 import BeforeAfter from "~/components/BeforeAfter.astro";
+import AutobodyNewsCard from "~/components/AutobodyNewsCard.astro";
 import { site } from "~/data/site.ts";
 import { videos, storyVideos, themeLabels, type VideoTheme } from "~/data/videos.ts";
 
@@ -332,6 +333,8 @@ const services = [
   <!-- ============================================================ PRESS -->
   <section class="container-page py-20 md:py-32">
     <div class="flex flex-col gap-10 md:gap-14 max-w-5xl mx-auto">
+      <AutobodyNewsCard />
+
       <header class="flex flex-col gap-5 text-center">
         <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">As featured</p>
         <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-[var(--color-bone)] leading-[0.95]">
