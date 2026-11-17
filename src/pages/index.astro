@@ -5,6 +5,7 @@ import SectionHeader from "~/components/SectionHeader.astro";
 import VideoCard from "~/components/VideoCard.astro";
 import BeforeAfter from "~/components/BeforeAfter.astro";
 import AutobodyNewsCard from "~/components/AutobodyNewsCard.astro";
+import HolidayFeature from "~/components/HolidayFeature.astro";
 import { site } from "~/data/site.ts";
 import { videos, storyVideos, themeLabels, type VideoTheme } from "~/data/videos.ts";
 
@@ -149,6 +150,9 @@ const services = [
       </div>
     </div>
   </section>
+
+  <!-- ========================================================= HOLIDAYS -->
+  <HolidayFeature />
 
   <!-- ========================================================= SERVICES -->
   <section class="border-y border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] py-20 md:py-28">
