@@ -1,13 +1,14 @@
 ---
 // Seasonal feature: the shop lit up for Christmas 2026. Photo is Ed's own
-// (Nov 16, 2026), retouched with AI for a blue-hour sky and wet-pavement
+// (Nov 16, 2026), AI-styled as a snowy scene (cars removed; garland, wreaths
+// and planter trees added; matches the Facebook cover) with a blue-hour sky and
 // reflections; all sign text and the address were restored from the original
 // pixels. Hides itself after SHOW_UNTIL so it never lingers into spring.
 import { site } from "~/data/site.ts";
 
 const SHOW_UNTIL = "2027-01-07"; // first day it should be gone
 const BASE = "https://res.cloudinary.com/dsbllwpbh/image/upload";
-const ID = "phils-collision/xmas-2026/web-5285-16x9";
+const ID = "phils-collision/xmas-2026/web-snow-b-16x9";
 const url = (w: number) => `${BASE}/f_auto,q_auto,w_${w}/${ID}`;
 const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
   `${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postal}`,
@@ -20,7 +21,7 @@ const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     sizes="100vw"
     width="4800"
     height="2700"
-    alt="Phil's Collision Center at dusk, outlined in red, green and blue Christmas lights, with the colors reflecting off the wet parking lot"
+    alt="Phil's Collision Center in fresh snow at dusk, outlined in colored Christmas lights, with garland, wreaths and two lit trees out front"
     class="w-full h-auto block"
     loading="lazy"
     decoding="async"
