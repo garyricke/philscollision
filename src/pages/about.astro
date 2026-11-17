@@ -2,6 +2,7 @@
 import Base from "~/layouts/Base.astro";
 import SectionHeader from "~/components/SectionHeader.astro";
 import VideoCard from "~/components/VideoCard.astro";
+import AutobodyNewsCard from "~/components/AutobodyNewsCard.astro";
 import { videos } from "~/data/videos.ts";
 import { site } from "~/data/site.ts";
 import { cld, cldSrcSet } from "~/data/cloudinary.ts";
@@ -125,6 +126,11 @@ const values = [
   </section>
 
   <!-- Press -->
+  <section class="container-page pt-20 md:pt-28">
+    <div class="max-w-5xl">
+      <AutobodyNewsCard />
+    </div>
+  </section>
   <section class="container-page py-20 md:py-28">
     <div class="max-w-3xl">
       <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium mb-4">As featured</p>
