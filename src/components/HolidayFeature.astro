@@ -1,0 +1,54 @@
+---
+// Seasonal feature: the shop lit up for Christmas 2026. Photo is Ed's own
+// (Nov 16, 2026), AI-styled as a snowy scene (cars removed; garland, wreaths
+// and planter trees added; matches the Facebook cover) with a blue-hour sky and
+// reflections; all sign text and the address were restored from the original
+// pixels. Hides itself after SHOW_UNTIL so it never lingers into spring.
+import { site } from "~/data/site.ts";
+
+const SHOW_UNTIL = "2027-01-07"; // first day it should be gone
+const BASE = "https://res.cloudinary.com/dsbllwpbh/image/upload";
+const ID = "phils-collision/xmas-2026/web-snow-b-16x9";
+const url = (w: number) => `${BASE}/f_auto,q_auto,w_${w}/${ID}`;
+const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+  `${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postal}`,
+)}`;
+---
+<section id="holidays" data-until={SHOW_UNTIL} class="relative isolate overflow-hidden bg-[var(--color-ink)] border-b border-[var(--color-ink-edge)]">
+  <img
+    src={url(1920)}
+    srcset={`${url(768)} 768w, ${url(1280)} 1280w, ${url(1920)} 1920w, ${url(2560)} 2560w`}
+    sizes="100vw"
+    width="4800"
+    height="2700"
+    alt="Phil's Collision Center in fresh snow at dusk, outlined in colored Christmas lights, with garland, wreaths and two lit trees out front"
+    class="w-full h-auto block"
+    loading="lazy"
+    decoding="async"
+  />
+  <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[var(--color-ink)] via-[var(--color-ink)]/60 to-transparent pointer-events-none"></div>
+  <div class="container-page relative -mt-28 md:-mt-56 pb-16 md:pb-24 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div class="flex flex-col gap-3 max-w-2xl">
+      <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Happy holidays from Phil's</p>
+      <h2 class="font-display text-4xl md:text-6xl text-[var(--color-bone)] leading-[0.95]">Lit up for the season.</h2>
+      <p class="font-editorial text-xl md:text-2xl text-[var(--color-bone-muted)] leading-snug">
+        The shop is dressed for the holidays. Drive by after dark and see it for yourself on Lincoln Highway in Schererville.
+      </p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+      <a href={directions} target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 border border-[var(--color-bone)]/40 hover:border-[var(--color-bone)] bg-[var(--color-ink)]/40 backdrop-blur-sm text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+        Get directions
+      </a>
+      <a href="/contact/" class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors">
+        Free estimate
+      </a>
+    </div>
+  </div>
+  <script is:inline>
+    (function () {
+      var s = document.getElementById("holidays");
+      if (s && new Date() >= new Date(s.dataset.until + "T00:00:00")) s.remove();
+    })();
+  </script>
+</section>
