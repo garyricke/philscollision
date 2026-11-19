@@ -16,13 +16,13 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
 <Base
   title="Contact"
   path="/contact/"
-  description="Schedule a free estimate, get directions, or call Phil's Collision Center in Schererville, IN."
+  description="Book a free estimate appointment, get directions, or call Phil's Collision Center in Schererville, IN."
 >
   <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
     <SectionHeader
       eyebrow="Contact"
       title="Book a time. Or just call."
-      deck="Estimates are free and take about 20 minutes. Schedule below, or call — the phone goes straight to the shop."
+      deck="Estimates are free and take about 20 minutes. Call to set up a time — the phone goes straight to the shop — or request one below and we'll call you to confirm."
     />
   </section>
 
@@ -46,7 +46,11 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
           <label>Leave this empty: <input name="bot-field" /></label>
         </p>
 
-        <h2 class="font-display text-3xl text-[var(--color-bone)]">Request a free estimate</h2>
+        <h2 class="font-display text-3xl text-[var(--color-bone)]">Book an estimate appointment</h2>
+        <p class="-mt-2 text-sm text-[var(--color-bone-muted)]">
+          Pick a day and time that works and we'll call to confirm. Rather talk now?
+          <a href={`tel:${site.phone.tel}`} class="text-[var(--color-spark-400)] font-medium whitespace-nowrap hover:underline">Call {site.phone.display}</a>
+        </p>
 
         <div class="grid sm:grid-cols-2 gap-5">
           <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
@@ -76,6 +80,26 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
               autocomplete="email"
               class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none"
             />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
+            Preferred day
+            <input
+              type="date"
+              name="preferred_day"
+              class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none [color-scheme:dark]"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
+            Preferred time
+            <select
+              name="preferred_time"
+              class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none"
+            >
+              <option value="">No preference</option>
+              <option>Morning</option>
+              <option>Midday</option>
+              <option>Afternoon</option>
+            </select>
           </label>
           <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
             Vehicle year, make, model
@@ -109,11 +133,11 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
           type="submit"
           class="self-start inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3 rounded-full font-medium transition-colors"
         >
-          Send request
+          Request appointment
           <span aria-hidden="true">→</span>
         </button>
         <p class="text-xs text-[var(--color-bone-dim)]">
-          We typically respond the same business day. For faster service, call us directly.
+          We'll call to confirm your time, usually the same business day. To book right now, call&nbsp;us.
         </p>
       </form>
     </div>

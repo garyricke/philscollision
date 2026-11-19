@@ -78,7 +78,7 @@ const services = [
   {
     n: "04",
     title: "Free Estimates",
-    blurb: "Call or schedule online. We work directly with State Farm and most major insurers — no runaround.",
+    blurb: "By appointment — call and we'll set up a time. We work directly with State Farm and most major insurers — no runaround.",
   },
 ];
 ---
@@ -135,19 +135,25 @@ const services = [
       </p>
       <div class="flex flex-wrap justify-center gap-3">
         <a
-          href="/contact/"
-          class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+          href={`tel:${site.phone.tel}`}
+          class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-7 py-4 rounded-full font-medium text-lg transition-colors shadow-[0_8px_30px_rgba(0,0,0,0.45)]"
         >
-          Free estimate
-          <span aria-hidden="true">→</span>
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.94.36 1.86.7 2.73a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.35-1.35a2 2 0 0 1 2.11-.45c.87.34 1.79.57 2.73.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call for an&nbsp;appointment
         </a>
         <a
-          href={`tel:${site.phone.tel}`}
-          class="inline-flex items-center gap-2 border border-[var(--color-bone)]/40 hover:border-[var(--color-bone)] bg-[var(--color-ink)]/40 backdrop-blur-sm text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
+          href="/contact/"
+          class="inline-flex items-center gap-2 border border-[var(--color-bone)]/40 hover:border-[var(--color-bone)] bg-[var(--color-ink)]/40 backdrop-blur-sm text-[var(--color-bone)] px-6 py-4 rounded-full font-medium transition-colors"
         >
-          {site.phone.display}
+          Book online
+          <span aria-hidden="true">→</span>
         </a>
       </div>
+      <p class="-mt-2 text-sm md:text-base text-[var(--color-bone)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+        <a href={`tel:${site.phone.tel}`} class="font-medium underline-offset-4 hover:underline">{site.phone.display}</a>
+        <span class="text-[var(--color-spark-400)] mx-2">·</span>
+        Free estimates, about 20&nbsp;minutes, by&nbsp;appointment
+      </p>
     </div>
   </section>
 
@@ -782,24 +788,25 @@ const services = [
       <div class="flex flex-col gap-3 max-w-2xl">
         <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Get started</p>
         <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-[var(--color-bone)] leading-[0.95]">
-          Bring it in. We'll handle the rest.
+          Set up a time. Then come on&nbsp;in.
         </h2>
         <p class="font-editorial text-xl text-[var(--color-bone-muted)] leading-snug">
-          Estimates are free. We work directly with your insurance — and we talk to you like you're family from the first call.
+          Call and we'll find a time that works. Estimates are free, take about 20&nbsp;minutes, and we work directly with your insurance — so you're in and&nbsp;out.
         </p>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 shrink-0">
         <a
-          href="/contact/"
+          href={`tel:${site.phone.tel}`}
           class="inline-flex items-center justify-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
         >
-          Schedule estimate
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.94.36 1.86.7 2.73a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.35-1.35a2 2 0 0 1 2.11-.45c.87.34 1.79.57 2.73.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call {site.phone.display}
         </a>
         <a
-          href={`tel:${site.phone.tel}`}
+          href="/contact/"
           class="inline-flex items-center justify-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-6 py-3.5 rounded-full font-medium transition-colors"
         >
-          {site.phone.display}
+          Book online
         </a>
       </div>
     </div>
