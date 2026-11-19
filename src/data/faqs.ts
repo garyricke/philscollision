@@ -12,7 +12,7 @@ export const faqs: Faq[] = [
   },
   {
     q: "How long does a free estimate take?",
-    a: "Most estimates take 15–20 minutes. Walk in during business hours or schedule online. We'll write the estimate while you wait, and email a copy for your records.",
+    a: "Most estimates take 15–20 minutes. Call or schedule online to book a time. We'll write the estimate while you wait, and email a copy for your records.",
   },
   {
     q: "Can you handle the insurance claim for me?",
@@ -48,7 +48,7 @@ export const faqs: Faq[] = [
   },
   {
     q: "What should I bring to my estimate?",
-    a: "Anything you've already received from the insurance company: emails, prior estimates, claim numbers, the adjuster's name and phone, and any pre-issued insurance checks. If you don't have any of that, no problem — just come in.",
+    a: "Anything you've already received from the insurance company: emails, prior estimates, claim numbers, the adjuster's name and phone, and any pre-issued insurance checks. If you don't have any of that, no problem — just bring the car to your appointment.",
   },
   {
     q: "What happens if you find more damage once you start the repair?",
