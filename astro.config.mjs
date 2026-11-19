@@ -11,7 +11,9 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes("/internal/"),
+      // Keep staff tools and utility pages (all noindex) out of the sitemap.
+      filter: (page) =>
+        !["/internal/", "/replies/", "/requests/", "/thank-you/"].some((p) => page.includes(p)),
     }),
   ],
   vite: {
