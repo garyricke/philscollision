@@ -14,10 +14,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.1.0",
+    "@anthropic-ai/sdk": "^1.10.0",
     "@astrojs/sitemap": "^3.2.1",
     "@tailwindcss/vite": "^4.0.0",
-    "tailwindcss": "^4.0.0",
-    "sharp": "^0.33.5"
+    "astro": "^5.1.0",
+    "sharp": "^0.33.5",
+    "tailwindcss": "^4.0.0"
   }
 }

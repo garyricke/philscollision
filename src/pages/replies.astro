@@ -1,0 +1,333 @@
+---
+// Review reply helper (/replies). Staff-only: paste what a customer said and
+// get an on-brand reply to post as Phil's. The password is checked by
+// netlify/functions/review-reply.mjs on the server (same password as
+// /requests), because every reply costs an API call.
+import "~/styles/global.css";
+import { site } from "~/data/site.ts";
+
+const FACEBOOK_REVIEWS = "https://www.facebook.com/profile.php?id=61576108792233&sk=reviews";
+const GOOGLE_REVIEWS = "https://business.google.com/reviews";
+
+const platforms = [
+  { value: "google", label: "Google" },
+  { value: "facebook", label: "Facebook" },
+  { value: "comment", label: "Comment" },
+  { value: "message", label: "Text / email" },
+  { value: "other", label: "Other" },
+];
+
+const field =
+  "w-full bg-[var(--color-ink-elev)] border border-[var(--color-ink-edge)] rounded-lg px-4 py-3 text-[var(--color-bone)] placeholder:text-[var(--color-bone-dim)] focus:border-[var(--color-spark-500)] focus:outline-none";
+const label = "text-xs uppercase tracking-widest text-[var(--color-bone-dim)]";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={`${site.url}/replies/`} />
+    <title>Review replies · {site.name}</title>
+  </head>
+  <body class="bg-[var(--color-ink)] text-[var(--color-bone)] min-h-screen">
+    <!-- Sign-in -->
+    <section id="signin" class="min-h-screen flex items-center justify-center p-6">
+      <form id="signin-form" class="w-full max-w-sm flex flex-col gap-5 text-center">
+        <div class="flex flex-col gap-2 mb-2">
+          <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium">Staff only</p>
+          <h1 class="font-display text-3xl text-[var(--color-bone)]">Review replies</h1>
+          <p class="text-sm text-[var(--color-bone-muted)]">Paste what a customer said. Get a reply that sounds like&nbsp;Phil’s.</p>
+        </div>
+        <label class="flex flex-col gap-2 text-left">
+          <span class={label}>Staff password</span>
+          <input id="pw" type="password" autocomplete="current-password" autofocus required class={field} />
+        </label>
+        <p id="signin-error" class="hidden text-sm text-[var(--color-spark-400)]" role="alert"></p>
+        <button
+          id="signin-btn"
+          type="submit"
+          class="bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] disabled:opacity-60 text-[var(--color-bone)] px-6 py-3 rounded-full font-medium transition-colors"
+        >
+          Sign in
+        </button>
+        <p class="text-xs text-[var(--color-bone-dim)]">Same password as the estimate&nbsp;requests&nbsp;page.</p>
+      </form>
+    </section>
+
+    <!-- Tool -->
+    <main id="app" class="hidden container-page py-10 md:py-16 max-w-3xl">
+      <header class="flex items-start justify-between gap-6 mb-8">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-spark-400)] font-medium mb-2">Staff only</p>
+          <h1 class="font-display text-4xl md:text-5xl text-[var(--color-bone)] leading-none">Review replies</h1>
+          <p class="mt-3 text-[var(--color-bone-muted)]" style="text-wrap: pretty">
+            Reply to every review, good or bad. It shows future customers you care, and it helps your best reviews get&nbsp;seen.
+          </p>
+        </div>
+        <button id="signout" type="button" class="shrink-0 text-xs uppercase tracking-widest text-[var(--color-bone-dim)] hover:text-[var(--color-bone)] transition-colors pt-2">
+          Sign out
+        </button>
+      </header>
+
+      <form id="reply-form" class="flex flex-col gap-6">
+        <fieldset class="flex flex-col gap-2">
+          <legend class={`${label} mb-2`}>Where was it posted?</legend>
+          <div class="flex flex-wrap gap-2" id="platforms">
+            {platforms.map((p, i) => (
+              <label class="cursor-pointer">
+                <input type="radio" name="platform" value={p.value} checked={i === 0} class="peer sr-only" />
+                <span class="inline-block rounded-full border border-[var(--color-ink-edge)] px-4 py-2 text-sm text-[var(--color-bone-muted)] peer-checked:border-[var(--color-spark-500)] peer-checked:bg-[var(--color-spark-500)] peer-checked:text-[var(--color-bone)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-[var(--color-spark-400)] transition-colors">
+                  {p.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="flex flex-col gap-2">
+          <legend class={`${label} mb-2`}>Stars <span class="normal-case tracking-normal">(if any)</span></legend>
+          <div class="flex gap-1" id="stars" role="radiogroup" aria-label="Star rating">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button type="button" data-star={n} aria-label={`${n} star${n > 1 ? "s" : ""}`} aria-pressed="false" class="star p-1.5 text-[var(--color-bone-dim)] hover:text-[var(--color-bone-muted)] transition-colors">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"></path></svg>
+              </button>
+            ))}
+            <button type="button" id="stars-clear" class="hidden ml-2 text-xs uppercase tracking-widest text-[var(--color-bone-dim)] hover:text-[var(--color-bone)]">Clear</button>
+          </div>
+        </fieldset>
+
+        <label class="flex flex-col gap-2">
+          <span class={label}>Their name <span class="normal-case tracking-normal">(as it shows)</span></span>
+          <input id="name" name="name" type="text" autocomplete="off" maxlength="80" placeholder="e.g. Eddy Gatton" class={field} />
+        </label>
+
+        <label class="flex flex-col gap-2">
+          <span class={label}>What they said</span>
+          <textarea id="text" name="text" required rows="6" maxlength="5000" placeholder="Paste the review, comment or message here" class={field}></textarea>
+        </label>
+
+        <label class="flex flex-col gap-2">
+          <span class={label}>Anything we should know? <span class="normal-case tracking-normal">(optional, stays private)</span></span>
+          <textarea id="notes" name="notes" rows="3" maxlength="1500" placeholder="e.g. Tony did the work. Parts were backordered. Happy to repaint under warranty." class={field}></textarea>
+        </label>
+
+        <label class="flex flex-col gap-2 sm:max-w-xs">
+          <span class={label}>Sign it as</span>
+          <select id="signer" name="signer" class={field}>
+            <option value="team">– The Phil’s Collision team</option>
+            <option value="ed_team">– Ed &amp; the Phil’s Collision team</option>
+            <option value="ed">– Ed</option>
+            <option value="none">No sign-off</option>
+          </select>
+        </label>
+
+        <p id="form-error" class="hidden text-sm text-[var(--color-spark-400)]" role="alert"></p>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button
+            id="write-btn"
+            type="submit"
+            class="inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] disabled:opacity-60 text-[var(--color-bone)] px-6 py-3 rounded-full font-medium transition-colors"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+            <span id="write-label">Write my reply</span>
+          </button>
+          <button id="clear-btn" type="button" class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)] hover:text-[var(--color-bone)] px-2">
+            Start over
+          </button>
+        </div>
+      </form>
+
+      <!-- Results -->
+      <section id="results" class="hidden mt-12 flex flex-col gap-5" aria-live="polite">
+        <div id="heads-up" class="hidden rounded-xl border border-[var(--color-spark-500)] bg-[var(--color-ink-elev)] p-5 flex gap-3">
+          <svg class="w-6 h-6 shrink-0 text-[var(--color-spark-400)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+          <div>
+            <p class="text-xs uppercase tracking-widest text-[var(--color-spark-400)] font-medium mb-1">Before you post</p>
+            <p id="heads-up-text" class="text-[var(--color-bone)]" style="text-wrap: pretty"></p>
+          </div>
+        </div>
+
+        <article class="rounded-2xl border border-[var(--color-ink-edge)] bg-[var(--color-ink-elev)] p-6">
+          <div class="flex items-center justify-between gap-4 mb-3">
+            <p class="text-xs uppercase tracking-widest text-[var(--color-spark-400)] font-medium">Best reply <span id="tone" class="ml-2 rounded-full border border-[var(--color-ink-edge)] px-2 py-0.5 text-[10px] text-[var(--color-bone-muted)]"></span></p>
+            <button type="button" data-copy="recommended" class="copy inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-4 py-2 rounded-full text-sm font-medium transition-colors">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="recommended" class="text-lg leading-relaxed whitespace-pre-wrap text-[var(--color-bone)]" style="text-wrap: pretty"></p>
+        </article>
+
+        <article class="rounded-2xl border border-[var(--color-ink-edge)] p-6">
+          <div class="flex items-center justify-between gap-4 mb-3">
+            <p class="text-xs uppercase tracking-widest text-[var(--color-bone-dim)] font-medium">Shorter option</p>
+            <button type="button" data-copy="alternate" class="copy inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-4 py-2 rounded-full text-sm font-medium transition-colors">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="alternate" class="leading-relaxed whitespace-pre-wrap text-[var(--color-bone-muted)]" style="text-wrap: pretty"></p>
+        </article>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="again-btn" type="button" class="inline-flex items-center gap-2 border border-[var(--color-ink-edge)] hover:border-[var(--color-bone-muted)] text-[var(--color-bone)] px-4 py-2.5 rounded-full text-sm font-medium transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg>
+            Try another version
+          </button>
+          <a href={GOOGLE_REVIEWS} target="_blank" rel="noopener" class="text-sm text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] underline underline-offset-4 px-2">Open Google reviews</a>
+          <a href={FACEBOOK_REVIEWS} target="_blank" rel="noopener" class="text-sm text-[var(--color-bone-muted)] hover:text-[var(--color-bone)] underline underline-offset-4 px-2">Open Facebook reviews</a>
+        </div>
+        <p class="text-xs text-[var(--color-bone-dim)]" style="text-wrap: pretty">Read it once before posting. You know the customer; change anything that doesn’t sound&nbsp;right.</p>
+      </section>
+    </main>
+
+    <script>
+      const KEY = "phils-requests-pw"; // shared with /requests so one sign-in covers both
+      const API = "/.netlify/functions/review-reply";
+      const $ = (id: string) => document.getElementById(id)!;
+      const signin = $("signin"), app = $("app");
+      const pw = $("pw") as HTMLInputElement;
+      const signinBtn = $("signin-btn") as HTMLButtonElement;
+      const signinError = $("signin-error"), formError = $("form-error");
+      const form = $("reply-form") as HTMLFormElement;
+      const writeBtn = $("write-btn") as HTMLButtonElement, writeLabel = $("write-label");
+      const results = $("results");
+      const starBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".star"));
+      const starsClear = $("stars-clear");
+      let stars: number | null = null;
+      const TONES: Record<string, string> = {
+        positive: "Positive", mixed: "Mixed", negative: "Negative",
+        not_a_customer: "Not our customer?", spam: "Spam?",
+      };
+
+      async function post(payload: object) {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ password: sessionStorage.getItem(KEY) || pw.value, ...payload }),
+        }).catch(() => null);
+        const body = res ? await res.json().catch(() => ({})) : {};
+        if (!res || !res.ok) {
+          throw Object.assign(new Error(body.error || "Couldn't reach the server. Check your connection and try again."), { status: res?.status });
+        }
+        return body;
+      }
+
+      function show(signedIn: boolean) {
+        signin.classList.toggle("hidden", signedIn);
+        app.classList.toggle("hidden", !signedIn);
+      }
+
+      $("signin-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        signinBtn.disabled = true; signinBtn.textContent = "Checking…";
+        signinError.classList.add("hidden");
+        try {
+          sessionStorage.removeItem(KEY);
+          await post({ check: true });
+          sessionStorage.setItem(KEY, pw.value.trim());
+          show(true);
+          ($("text") as HTMLTextAreaElement).focus();
+        } catch (err: any) {
+          signinError.textContent = err.message;
+          signinError.classList.remove("hidden");
+          pw.select();
+        } finally {
+          signinBtn.disabled = false; signinBtn.textContent = "Sign in";
+        }
+      });
+
+      function paintStars() {
+        starBtns.forEach((b) => {
+          const on = stars !== null && Number(b.dataset.star) <= stars;
+          b.classList.toggle("text-[var(--color-spark-400)]", on);
+          b.classList.toggle("text-[var(--color-bone-dim)]", !on);
+          b.setAttribute("aria-pressed", String(stars === Number(b.dataset.star)));
+        });
+        starsClear.classList.toggle("hidden", stars === null);
+      }
+      starBtns.forEach((b) => b.addEventListener("click", () => { stars = Number(b.dataset.star); paintStars(); }));
+      starsClear.addEventListener("click", () => { stars = null; paintStars(); });
+
+      function payload() {
+        const platform = (form.querySelector('input[name="platform"]:checked') as HTMLInputElement)?.value;
+        return {
+          platform,
+          stars,
+          name: ($("name") as HTMLInputElement).value,
+          text: ($("text") as HTMLTextAreaElement).value,
+          notes: ($("notes") as HTMLTextAreaElement).value,
+          signer: ($("signer") as HTMLSelectElement).value,
+        };
+      }
+
+      async function write() {
+        const p = payload();
+        if (!p.text.trim()) {
+          formError.textContent = "Paste what the customer said first.";
+          formError.classList.remove("hidden");
+          return;
+        }
+        formError.classList.add("hidden");
+        writeBtn.disabled = true; writeLabel.textContent = "Writing…";
+        ($("again-btn") as HTMLButtonElement).disabled = true;
+        try {
+          const r = await post(p);
+          $("recommended").textContent = r.recommended;
+          $("alternate").textContent = r.alternate;
+          $("tone").textContent = TONES[r.tone] || "";
+          $("heads-up-text").textContent = r.headsUp || "";
+          $("heads-up").classList.toggle("hidden", !r.headsUp);
+          results.classList.remove("hidden");
+          results.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (err: any) {
+          if (err.status === 401) { sessionStorage.removeItem(KEY); show(false); return; }
+          formError.textContent = err.message;
+          formError.classList.remove("hidden");
+        } finally {
+          writeBtn.disabled = false; writeLabel.textContent = "Write my reply";
+          ($("again-btn") as HTMLButtonElement).disabled = false;
+        }
+      }
+
+      form.addEventListener("submit", (e) => { e.preventDefault(); write(); });
+      $("again-btn").addEventListener("click", write);
+
+      document.querySelectorAll<HTMLButtonElement>(".copy").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const text = $(btn.dataset.copy!).textContent || "";
+          const label = btn.querySelector("span")!;
+          try {
+            await navigator.clipboard.writeText(text);
+            label.textContent = "Copied";
+          } catch {
+            const range = document.createRange();
+            range.selectNodeContents($(btn.dataset.copy!));
+            const sel = window.getSelection()!; sel.removeAllRanges(); sel.addRange(range);
+            label.textContent = "Selected, copy it";
+          }
+          setTimeout(() => (label.textContent = "Copy"), 2000);
+        });
+      });
+
+      $("clear-btn").addEventListener("click", () => {
+        form.reset(); stars = null; paintStars();
+        results.classList.add("hidden"); formError.classList.add("hidden");
+        ($("text") as HTMLTextAreaElement).focus();
+      });
+
+      $("signout").addEventListener("click", () => {
+        sessionStorage.removeItem(KEY);
+        pw.value = ""; show(false); pw.focus();
+      });
+
+      // Stay signed in for this browser tab (and share sign-in with /requests)
+      if (sessionStorage.getItem(KEY)) {
+        post({ check: true }).then(() => show(true)).catch(() => sessionStorage.removeItem(KEY));
+      }
+    </script>
+  </body>
+</html>
