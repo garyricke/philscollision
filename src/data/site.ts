@@ -30,14 +30,15 @@ export const site = {
 
   email: "philscollision@philscollisioncenter.com", // shop inbox, confirmed 2026-11-10
 
-  // Hours — TODO: confirm with client; placeholders below match typical body shop hours
+  // Hours — confirmed by Ed, 19 Nov 2026 (matches Google Business Profile).
+  // 24-hour HH:MM here (used as-is in JSON-LD); displayed via formatHours().
   hours: [
-    { day: "Mon", open: "7:30", close: "17:30" },
-    { day: "Tue", open: "7:30", close: "17:30" },
-    { day: "Wed", open: "7:30", close: "17:30" },
-    { day: "Thu", open: "7:30", close: "17:30" },
-    { day: "Fri", open: "7:30", close: "17:30" },
-    { day: "Sat", open: "8:00", close: "12:00" },
+    { day: "Mon", open: "08:00", close: "17:00" },
+    { day: "Tue", open: "08:00", close: "17:00" },
+    { day: "Wed", open: "08:00", close: "17:00" },
+    { day: "Thu", open: "08:00", close: "17:00" },
+    { day: "Fri", open: "08:00", close: "17:00" },
+    { day: "Sat", open: "09:00", close: "12:00" },
     { day: "Sun", open: null, close: null },
   ],
 
@@ -81,3 +82,16 @@ export const footerNav: NavItem[] = [
   { label: "About", href: "/about/" },
   { label: "Contact", href: "/contact/" },
 ];
+
+/** "08:00" → "8\u00a0AM", "12:00" → "Noon", "17:30" → "5:30\u00a0PM" (non-breaking spaces). */
+function to12h(t: string): string {
+  const [h, m] = t.split(":").map(Number);
+  if (h === 12 && m === 0) return "Noon";
+  const hr = h % 12 || 12;
+  return `${hr}${m ? `:${String(m).padStart(2, "0")}` : ""}\u00a0${h < 12 ? "AM" : "PM"}`;
+}
+
+/** Display string for one day's hours, e.g. "8 AM – 5 PM" or "Closed". */
+export function formatHours(h: { open: string | null; close: string | null }): string {
+  return h.open && h.close ? `${to12h(h.open)}\u00a0–\u00a0${to12h(h.close)}` : "Closed";
+}
