@@ -16,6 +16,8 @@ export interface Props {
   ogImage?: string;
   /** Optional override of the default LocalBusiness JSON-LD on this page. */
   extraJsonLd?: unknown;
+  /** Keep this page out of search results (thank-you pages, utility pages). */
+  noindex?: boolean;
 }
 
 const {
@@ -24,6 +26,7 @@ const {
   path,
   ogImage = "https://res.cloudinary.com/dsbllwpbh/image/upload/f_auto,q_auto,w_1200/phils-collision/og",
   extraJsonLd,
+  noindex = false,
 } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : site.name;
@@ -78,6 +81,7 @@ const businessSchema = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
