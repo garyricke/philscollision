@@ -32,7 +32,7 @@ const FALLBACK = [SHOP, GARY];
 const SKIP = new Set(['prepay-choice']);
 
 const SUBJECT_LABEL = {
-  estimate: 'New estimate request',
+  estimate: 'New appointment request',
 };
 
 // A submission whose name starts with this goes only to Gary, so the whole path
