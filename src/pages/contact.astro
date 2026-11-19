@@ -1,7 +1,7 @@
 ---
 import Base from "~/layouts/Base.astro";
 import SectionHeader from "~/components/SectionHeader.astro";
-import { site } from "~/data/site.ts";
+import { site, formatHours } from "~/data/site.ts";
 
 const dayLabel: Record<string, string> = {
   Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday",
@@ -177,7 +177,7 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
             <div class="flex justify-between px-4 py-2.5">
               <dt class="text-[var(--color-bone-muted)]">{dayLabel[h.day]}</dt>
               <dd class="text-[var(--color-bone)] tabular-nums">
-                {h.open && h.close ? `${h.open}–${h.close}` : "Closed"}
+                {formatHours(h)}
               </dd>
             </div>
           ))}
