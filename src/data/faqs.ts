@@ -28,7 +28,7 @@ export const faqs: Faq[] = [
   },
   {
     q: "Do you do mechanical work, or only body?",
-    a: "Both. We handle suspension, brakes, oil changes, door hardware, window regulators, and most of the mechanical work that surrounds a collision repair — under one roof.",
+    a: "Both. We handle any mechanical issues from the accident — suspension, door hardware, window regulators and more — under one roof.",
   },
   {
     q: "Can you match a custom paint color?",

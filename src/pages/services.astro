@@ -33,10 +33,10 @@ const primary = [
   {
     n: "03",
     title: "Mechanical Repair",
-    summary: "The mechanical work that completes a collision job — and the everyday work that doesn't need to be a collision.",
+    summary: "The mechanical work that completes a collision job.",
     detail: [
       "Door latches, handles, window regulators",
-      "Brakes, oil changes, suspension",
+      "Any mechanical issues from the accident, including suspension",
       "Pre- and post-repair scans, calibrations on ADAS-equipped vehicles",
       "Diagnostics from the same team that handles the body work",
     ],
@@ -56,23 +56,19 @@ const adjacent = [
     title: "Towing",
     body: "We have many towing vendors available — one call brings the car straight to us.",
   },
-  {
-    title: "Custom restoration",
-    body: "Frame-off restorations for classics. Ask about the '65 Chevelle we just finished.",
-  },
 ];
 ---
 
 <Base
   title="Services"
   path="/services/"
-  description="Collision repair, paint, mechanical, detailing, towing, custom restoration. I-CAR certified, State Farm DRP partner."
+  description="Collision repair, paint, mechanical, detailing, towing. I-CAR certified, State Farm DRP partner."
 >
   <section class="container-page pt-16 md:pt-24 pb-12 md:pb-20">
     <SectionHeader
       eyebrow="Services"
       title="What we do, and the way we do it."
-      deck="Every job, from a door ding to a frame-off restoration, follows manufacturer procedure and ends with a lifetime workmanship warranty."
+      deck="Every job, from a little ding to major collision, follows manufacturer procedure and ends with a lifetime workmanship warranty."
     />
   </section>
 
@@ -110,7 +106,7 @@ const adjacent = [
         eyebrow="Also"
         title="The things you'd hope a collision shop also does."
       />
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {adjacent.map((a) => (
           <article class="p-6 rounded-2xl border border-[var(--color-ink-edge)] hover:border-[var(--color-spark-500)]/40 transition-colors">
             <h3 class="font-display text-2xl text-[var(--color-bone)] mb-3">{a.title}</h3>
