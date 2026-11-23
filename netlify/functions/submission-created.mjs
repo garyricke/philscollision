@@ -32,8 +32,17 @@ const FALLBACK = [SHOP, GARY];
 const SKIP = new Set(['prepay-choice']);
 
 const SUBJECT_LABEL = {
-  estimate: 'New appointment request',
+  estimate: 'New estimate request',
 };
+
+// Friendlier labels than the raw field names
+const LABELS = {
+  insurance: 'Insurance',
+  message: 'Damage',
+};
+
+// Shown in the email even when the customer leaves them blank
+const ALWAYS_SHOW = new Set(['insurance']);
 
 // A submission whose name starts with this goes only to Gary, so the whole path
 // can be tested on the live site without emailing the shop.
@@ -64,9 +73,9 @@ function rowsFrom(payload) {
   return names
     .map((name) => {
       const value = data[name];
-      const label = String(titles[name] || titleCase(name)).replace(/\s+/g, ' ').trim();
+      const label = String(LABELS[name] || titles[name] || titleCase(name)).replace(/\s+/g, ' ').trim();
       if (isFile(value)) return { label, file: value };
-      if (value == null || value === '') return null;
+      if (value == null || value === '') return ALWAYS_SHOW.has(name) ? { label, value: 'Not given' } : null;
       return { label, value: Array.isArray(value) ? value.join(', ') : String(value) };
     })
     .filter(Boolean);

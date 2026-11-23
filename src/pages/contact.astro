@@ -46,9 +46,9 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
           <label>Leave this empty: <input name="bot-field" /></label>
         </p>
 
-        <h2 class="font-display text-3xl text-[var(--color-bone)]">Book an estimate appointment</h2>
+        <h2 class="font-display text-3xl text-[var(--color-bone)]">Request a free estimate</h2>
         <p class="-mt-2 text-sm text-[var(--color-bone-muted)]">
-          Pick a day and time that works and we'll call to confirm. Rather talk now?
+          Tell us about your vehicle and we'll call you to set up a time. Rather talk&nbsp;now?
           <a href={`tel:${site.phone.tel}`} class="text-[var(--color-spark-400)] font-medium whitespace-nowrap hover:underline">Call {site.phone.display}</a>
         </p>
 
@@ -82,47 +82,29 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
             />
           </label>
           <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
-            Preferred day
-            <input
-              type="date"
-              name="preferred_day"
-              class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none [color-scheme:dark]"
-            />
-          </label>
-          <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
-            Preferred time
-            <select
-              name="preferred_time"
-              class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none"
-            >
-              <option value="">No preference</option>
-              <option>Morning</option>
-              <option>Midday</option>
-              <option>Afternoon</option>
-            </select>
-          </label>
-          <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
             Vehicle year, make, model
             <input
               type="text"
               name="vehicle"
+              required
               placeholder="2018 Chevrolet Equinox"
               class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none"
             />
           </label>
           <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)]">
-            Insurance (optional)
+            Insurance company
             <input
               type="text"
               name="insurance"
-              placeholder="State Farm"
+              placeholder="State Farm, or none"
               class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none"
             />
           </label>
           <label class="flex flex-col gap-1.5 text-sm text-[var(--color-bone-muted)] sm:col-span-2">
-            What happened? (and where on the vehicle)
+            Damage description (what happened, and where on the&nbsp;vehicle)
             <textarea
               name="message"
+              required
               rows="4"
               class="bg-[var(--color-ink)] border border-[var(--color-ink-edge)] focus:border-[var(--color-spark-500)] rounded-lg px-3 py-2.5 text-[var(--color-bone)] outline-none resize-y"
             ></textarea>
@@ -133,11 +115,11 @@ const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${enc
           type="submit"
           class="self-start inline-flex items-center gap-2 bg-[var(--color-spark-500)] hover:bg-[var(--color-spark-600)] text-[var(--color-bone)] px-6 py-3 rounded-full font-medium transition-colors"
         >
-          Request appointment
+          Request estimate
           <span aria-hidden="true">→</span>
         </button>
         <p class="text-xs text-[var(--color-bone-dim)]">
-          We'll call to confirm your time, usually the same business day. To book right now, call&nbsp;us.
+          We'll call to set up a time, usually the same business day. To book right now, call&nbsp;us.
         </p>
       </form>
     </div>
