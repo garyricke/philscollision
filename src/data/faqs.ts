@@ -40,11 +40,11 @@ export const faqs: Faq[] = [
   },
   {
     q: "What if my car needs to be towed?",
-    a: "We're partnered with Stan's Towing. One call to us and we'll arrange to have your vehicle brought to the shop directly.",
+    a: "We have many towing vendors available. One call to us and we'll arrange to have your vehicle brought to the shop directly.",
   },
   {
     q: "How do I care for fresh paint?",
-    a: "Our booth bakes the paint, so it's fine to hand wash right away — but skip commercial brush washes, and don't wax for about three months while the finish fully cures.",
+    a: "Our booth bakes the paint, so it's fine to hand wash right away — but skip commercial brush washes, and don't wax for 30 days while the finish fully cures.",
   },
   {
     q: "What should I bring to my estimate?",
