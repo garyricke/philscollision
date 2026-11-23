@@ -29,7 +29,6 @@ const HEADING_TO_SLUG = {
   "Terry_Cadillac_V1": "terry-cadillac",
   "Gary_E_V1": "gary-e",
   "Harrison_landscape_V1": "harrison-landscape",
-  "Ivan_Master_Painter_V1": "ivan-master-painter",
   "Eds_Chevelle_V1": "eds-chevelle",
   "Ed_s_Story_V2": "eds-story",
   "Tim-Duffin_V1": "tim-duffin",
